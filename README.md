@@ -1,15 +1,26 @@
 # SimDeck
 
-Browser-based control for iOS Simulator and Android Emulator. No Appium required.
+Control iOS Simulator and Android Emulator from your browser. Enables AI agents with Chrome access to see and interact with your mobile device.
+
+## Why SimDeck?
+
+AI agents like Claude (with browser access via MCP) can control web browsers but have no way to interact with mobile devices. SimDeck bridges this gap by exposing your simulator/emulator through a web interface that AI agents can see and control.
+
+**Use cases:**
+- Let AI agents test your mobile app
+- Automate mobile workflows with natural language
+- Debug mobile issues with AI assistance
+- Demo mobile apps to AI for feedback
 
 ## Features
 
-- **Real-time screen streaming** - Watch your device in the browser via WebSocket
+- **AI-agent friendly** - Web UI that AI agents with Chrome/browser access can see and control
+- **Real-time screen streaming** - Live device view via WebSocket
 - **Tap interaction** - Click anywhere on the device screen
 - **Quick actions** - Home, browser, settings, screenshot buttons
 - **URL navigation** - Open URLs directly in the device browser
 - **Text input** - Type text into focused fields
-- **Dual platform** - Supports both iOS Simulator and Android Emulator
+- **Dual platform** - iOS Simulator and Android Emulator
 
 ## Requirements
 
@@ -26,7 +37,7 @@ Browser-based control for iOS Simulator and Android Emulator. No Appium required
 
 ```bash
 # Clone the repository
-git clone <repo-url>
+git clone https://github.com/nbarthelemy/simdeck.git
 cd simdeck
 
 # Install dependencies
