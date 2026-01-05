@@ -1,0 +1,29 @@
+{
+  "enabled": true,
+  "auto_orchestrate": true,
+  "max_concurrent_agents": 5,
+  "agent_timeout_ms": 1800000,
+  "require_confirmation_threshold": 3,
+  "log_level": "info",
+  "synthesis": {
+    "auto_synthesize": true,
+    "conflict_resolution": "flag_for_user",
+    "deduplication": true
+  },
+  "safety": {
+    "max_retries_per_agent": 2,
+    "fail_fast_on_critical": false,
+    "preserve_partial_results": true,
+    "auto_cancel_on_consecutive_failures": 3
+  },
+  "complexity_thresholds": {
+    "file_count": 5,
+    "domain_count": 2,
+    "estimated_steps": 4,
+    "trigger_orchestration_score": 2.5
+  },
+  "agent_defaults": {
+    "model": "sonnet",
+    "timeout_ms": 300000
+  }
+}

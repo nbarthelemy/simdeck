@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SimDeck - Mobile Device Control</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+</head>
+<body>
+  <div class="app">
+    <!-- Background gradient orbs -->
+    <div class="bg-orb bg-orb-1"></div>
+    <div class="bg-orb bg-orb-2"></div>
+    <div class="bg-orb bg-orb-3"></div>
+
+    <div class="container">
+      <!-- Floating sidebar -->
+      <aside class="sidebar glass">
+        <div class="sidebar-header">
+          <div class="logo">
+            <div class="logo-icon">
+              <i data-lucide="smartphone" class="icon"></i>
+            </div>
+            <span class="logo-text">SimDeck</span>
+          </div>
+          <div class="version">v1.1</div>
+        </div>
+
+        <!-- Connection card -->
+        <div class="card" id="connectionCard">
+          <div class="connection-row">
+            <div class="status-dot" id="statusDot"></div>
+            <div class="connection-info">
+              <span class="connection-label" id="connectionLabel">Disconnected</span>
+              <span class="platform-label" id="platformLabel">--</span>
+            </div>
+          </div>
+          <div class="connection-actions">
+            <button class="btn btn-primary" id="connectBtn">
+              <i data-lucide="link" class="icon-sm"></i>
+              <span>Connect</span>
+            </button>
+            <button class="btn btn-ghost" id="disconnectBtn" disabled>
+              <i data-lucide="unlink" class="icon-sm"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="section">
+          <div class="section-header">
+            <i data-lucide="zap" class="icon-xs"></i>
+            <span>Quick Actions</span>
+          </div>
+          <div class="action-grid">
+            <button class="action-btn" id="homeBtn" disabled title="Home">
+              <i data-lucide="home" class="icon"></i>
+            </button>
+            <button class="action-btn" id="backBtn" disabled title="Back" style="display:none">
+              <i data-lucide="arrow-left" class="icon"></i>
+            </button>
+            <button class="action-btn" id="browserBtn" disabled title="Browser">
+              <i data-lucide="compass" class="icon" id="browserIcon"></i>
+            </button>
+            <button class="action-btn" id="settingsBtn" disabled title="Settings">
+              <i data-lucide="settings" class="icon"></i>
+            </button>
+            <button class="action-btn" id="screenshotBtn" disabled title="Screenshot">
+              <i data-lucide="camera" class="icon"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Navigate -->
+        <div class="section">
+          <div class="section-header">
+            <i data-lucide="globe" class="icon-xs"></i>
+            <span>Navigate</span>
+          </div>
+          <div class="input-group">
+            <input type="text" id="urlInput" placeholder="https://example.com" disabled class="input">
+            <button class="btn btn-accent" id="goBtn" disabled>
+              <i data-lucide="arrow-right" class="icon-sm"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Type Text -->
+        <div class="section">
+          <div class="section-header">
+            <i data-lucide="type" class="icon-xs"></i>
+            <span>Type Text</span>
+          </div>
+          <div class="input-group">
+            <input type="text" id="textInput" placeholder="Enter text..." disabled class="input">
+            <button class="btn btn-accent" id="typeBtn" disabled>
+              <i data-lucide="send-horizontal" class="icon-sm"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Elements (Android only) -->
+        <div class="section" id="elementsSection" style="display:none">
+          <div class="section-header">
+            <i data-lucide="mouse-pointer-click" class="icon-xs"></i>
+            <span>Tap Element</span>
+            <span class="badge" id="elementCount">0</span>
+          </div>
+          <div class="input-group">
+            <input type="text" id="elementQuery" placeholder="Button text or ID..." disabled class="input">
+            <button class="btn btn-accent" id="tapElementBtn" disabled>
+              <i data-lucide="pointer" class="icon-sm"></i>
+            </button>
+          </div>
+          <button class="btn btn-ghost btn-full" id="refreshElementsBtn" disabled>
+            <i data-lucide="refresh-cw" class="icon-sm"></i>
+            <span>Refresh Elements</span>
+          </button>
+          <div class="elements-list" id="elementsList"></div>
+        </div>
+
+        <!-- Footer -->
+        <div class="sidebar-footer">
+          <div class="coords" id="coordsDisplay">
+            <i data-lucide="crosshair" class="icon-xs"></i>
+            <span id="coords">--</span>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Device Area -->
+      <main class="device-area">
+        <div class="device-container">
+          <div class="device-frame" id="deviceFrame">
+            <div class="device-speaker"></div>
+            <div class="device-notch" id="deviceNotch">
+              <div class="notch-camera"></div>
+            </div>
+            <div class="device-screen" id="deviceScreen">
+              <div class="placeholder" id="placeholder">
+                <div class="placeholder-content">
+                  <i data-lucide="smartphone" class="placeholder-icon"></i>
+                  <h3>No Device Connected</h3>
+                  <p>Click "Connect" to start streaming</p>
+                </div>
+              </div>
+              <img id="streamImg" class="stream hidden" alt="Device Screen">
+              <div class="touch-overlay" id="touchOverlay"></div>
+            </div>
+            <div class="device-home-indicator" id="deviceHomeIndicator"></div>
+          </div>
+
+          <!-- Floating info pill -->
+          <div class="info-pill glass" id="infoPill" style="display:none">
+            <i data-lucide="info" class="icon-xs"></i>
+            <span id="deviceName">iPhone 15 Pro</span>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+  <script>
+    // Initialize Lucide icons
+    lucide.createIcons();
+  </script>
+</body>
+</html>

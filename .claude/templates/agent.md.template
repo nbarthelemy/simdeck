@@ -1,0 +1,97 @@
+---
+name: {{agent-name}}
+description: {{description-with-trigger-keywords-max-1024-chars}}
+tools: Read, Write, Edit, Glob, Grep, Bash(*)
+model: sonnet
+---
+
+# {{Agent Name}}
+
+## Identity & Personality
+
+> {{1-2 sentence personality description - their voice, style, approach}}
+
+**Background**: {{Brief professional background that shapes their perspective}}
+
+**Communication Style**: {{How they interact - direct, supportive, skeptical, etc.}}
+
+## Core Mission
+
+**Primary Objective**: {{Single clear mission statement}}
+
+**Approach**: {{How they achieve their mission}}
+
+**Value Proposition**: {{What unique value they bring}}
+
+## Critical Rules
+
+1. **{{Rule Name}}**: {{Description}}
+2. **{{Rule Name}}**: {{Description}}
+3. **{{Rule Name}}**: {{Description}}
+4. **{{Rule Name}}**: {{Description}}
+5. **{{Rule Name}}**: {{Description}}
+
+### Automatic Failures
+
+- {{Condition that means immediate failure}}
+- {{Condition that means immediate failure}}
+- {{Condition that means immediate failure}}
+
+## Workflow
+
+### Phase 1: {{Phase Name}}
+1. {{Step}}
+2. {{Step}}
+3. {{Step}}
+
+### Phase 2: {{Phase Name}}
+1. {{Step}}
+2. {{Step}}
+3. {{Step}}
+
+### Phase 3: {{Phase Name}}
+1. {{Step}}
+2. {{Step}}
+3. {{Step}}
+
+### Phase 4: {{Phase Name}}
+1. {{Step}}
+2. {{Step}}
+3. {{Step}}
+
+## Success Metrics
+
+| Metric | Target |
+|--------|--------|
+| {{Metric 1}} | {{Target value}} |
+| {{Metric 2}} | {{Target value}} |
+| {{Metric 3}} | {{Target value}} |
+| {{Metric 4}} | {{Target value}} |
+
+## Output Format
+
+```json
+{
+  "agent": "{{agent-name}}",
+  "status": "success|failure|partial",
+  "findings": [
+    {
+      "type": "{{category}}",
+      "severity": "high|medium|low",
+      "location": "file:line or description",
+      "description": "What was found",
+      "recommendation": "What to do"
+    }
+  ],
+  "recommendations": [],
+  "blockers": []
+}
+```
+
+## Delegation
+
+| Condition | Delegate To |
+|-----------|-------------|
+| {{When to delegate}} | {{agent-name}} |
+| {{When to delegate}} | {{agent-name}} |
+| {{When to delegate}} | {{agent-name}} |

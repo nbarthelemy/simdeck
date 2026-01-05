@@ -1,0 +1,75 @@
+{
+  "$schema": "https://claudenv.dev/schemas/design-config.json",
+  "_comment": "Project design configuration for frontend-design skill. Copy to .claude/design-config.json and customize.",
+
+  "aesthetic": "minimalist",
+  "_aesthetic_options": ["brutalist", "minimalist", "maximalist", "neo-corporate", "retro-futuristic", "editorial", "organic", "dark-mode-native"],
+
+  "fonts": {
+    "display": null,
+    "body": null,
+    "mono": null,
+    "_comment": "Set to font family names. Null means skill will choose based on aesthetic."
+  },
+
+  "colors": {
+    "primary": null,
+    "secondary": null,
+    "accent": null,
+    "_comment": "Set to hex or HSL values. Null means skill will derive from aesthetic."
+  },
+
+  "darkMode": {
+    "enabled": true,
+    "default": false,
+    "_comment": "enabled: support dark mode. default: start in dark mode."
+  },
+
+  "animation": {
+    "level": "standard",
+    "_level_options": ["none", "minimal", "standard", "expressive"],
+    "respectReducedMotion": true
+  },
+
+  "spacing": {
+    "scale": "default",
+    "_scale_options": ["compact", "default", "spacious"],
+    "_comment": "Affects overall whitespace and padding."
+  },
+
+  "borders": {
+    "radius": "medium",
+    "_radius_options": ["none", "small", "medium", "large", "full"],
+    "style": "subtle",
+    "_style_options": ["none", "subtle", "prominent"]
+  },
+
+  "shadows": {
+    "style": "soft",
+    "_style_options": ["none", "sharp", "soft", "glow"]
+  },
+
+  "designReferences": [
+    "_comment: Add URLs of sites whose design you want to reference",
+    "https://linear.app",
+    "https://vercel.com"
+  ],
+
+  "avoidPatterns": [
+    "_comment: List specific patterns to avoid",
+    "purple-blue gradients",
+    "generic startup aesthetics"
+  ],
+
+  "componentLibrary": null,
+  "_componentLibrary_options": ["shadcn", "radix", "headless-ui", "chakra", "mui", "custom", null],
+
+  "cssFramework": null,
+  "_cssFramework_options": ["tailwind", "css-modules", "styled-components", "emotion", "vanilla", null],
+  "_cssFramework_comment": "Null means auto-detect from project.",
+
+  "customTokens": {
+    "_comment": "Add custom CSS custom properties here",
+    "example": "--custom-property: value;"
+  }
+}

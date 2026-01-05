@@ -1,0 +1,44 @@
+---
+name: [skill-name]
+description: [Trigger-rich description]
+allowed-tools: [Tools]
+model: sonnet
+---
+
+# [Skill Name]
+
+## Documentation Access
+
+**Primary Documentation:**
+- [URL]
+
+## Purpose
+
+[What this skill does]
+
+## Autonomy Level: Full
+
+- [Capabilities]
+
+## When to Activate
+
+- [Triggers]
+
+## Instructions
+
+1. [Steps]
+
+## Common Patterns
+
+### [Pattern]
+```
+[Example]
+```
+
+## Error Handling
+
+- [Error]: [Resolution]
+
+## Delegation
+
+- [Condition] → [Skill]

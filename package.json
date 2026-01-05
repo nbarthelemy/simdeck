@@ -1,0 +1,43 @@
+{
+  "name": "simdeck",
+  "version": "1.0.0",
+  "description": "Control iOS Simulator & Android Emulator from your browser - no Appium required",
+  "type": "module",
+  "main": "src/server.js",
+  "bin": {
+    "simdeck": "./bin/simdeck.js"
+  },
+  "scripts": {
+    "start": "node bin/simdeck.js",
+    "ios": "node bin/simdeck.js --ios",
+    "android": "node bin/simdeck.js --android",
+    "dev": "node bin/simdeck.js --dev"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "open": "^10.0.0",
+    "ws": "^8.16.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "keywords": [
+    "ios",
+    "android",
+    "simulator",
+    "emulator",
+    "automation",
+    "testing",
+    "simctl",
+    "adb",
+    "mobile",
+    "device-control"
+  ],
+  "author": "",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": ""
+  }
+}

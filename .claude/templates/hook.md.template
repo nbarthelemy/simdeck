@@ -1,0 +1,117 @@
+# Hook Template
+
+## Hook Configuration (settings.json)
+
+```json
+{
+  "hooks": {
+    "[HookEvent]": [
+      {
+        "matcher": "[ToolPattern]",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "[shell command]"
+          }
+        ]
+      }
+    ]
+  }
+}
+```
+
+## Available Hook Events
+
+| Event | Trigger | Use Case |
+|-------|---------|----------|
+| `PreToolUse` | Before any tool runs | Validation, blocking |
+| `PostToolUse` | After any tool runs | Formatting, logging |
+| `Stop` | Claude finishes responding | Cleanup, summary |
+| `SessionStart` | New session begins | Environment setup |
+| `UserPromptSubmit` | User sends message | Input processing |
+| `Notification` | Claude sends notification | Alerting |
+
+## Matcher Patterns
+
+- `Write` - Matches Write tool
+- `Edit` - Matches Edit tool
+- `Write|Edit` - Matches either
+- `Bash` - Matches Bash tool
+- `*` - Matches all tools
+
+## Environment Variables Available
+
+| Variable | Description |
+|----------|-------------|
+| `$CLAUDE_TOOL_NAME` | Name of the tool |
+| `$CLAUDE_TOOL_INPUT` | Tool input (JSON) |
+| `$CLAUDE_FILE_PATH` | File path (for file tools) |
+
+## Example Hooks
+
+### Format TypeScript After Edit
+
+```json
+{
+  "PostToolUse": [
+    {
+      "matcher": "Write|Edit",
+      "hooks": [
+        {
+          "type": "command",
+          "command": "if [[ \"$CLAUDE_FILE_PATH\" == *.ts ]] || [[ \"$CLAUDE_FILE_PATH\" == *.tsx ]]; then npx prettier --write \"$CLAUDE_FILE_PATH\"; fi"
+        }
+      ]
+    }
+  ]
+}
+```
+
+### Log All Commands
+
+```json
+{
+  "PostToolUse": [
+    {
+      "matcher": "Bash",
+      "hooks": [
+        {
+          "type": "command",
+          "command": "echo \"[$(date)] Bash: $CLAUDE_TOOL_INPUT\" >> .claude/logs/commands.log"
+        }
+      ]
+    }
+  ]
+}
+```
+
+### Session Startup
+
+```json
+{
+  "SessionStart": [
+    {
+      "type": "command",
+      "command": ".claude/scripts/session-start.sh"
+    }
+  ]
+}
+```
+
+### Pre-commit Validation
+
+```json
+{
+  "PreToolUse": [
+    {
+      "matcher": "Bash",
+      "hooks": [
+        {
+          "type": "command",
+          "command": "if echo \"$CLAUDE_TOOL_INPUT\" | grep -q 'git commit'; then .claude/scripts/pre-commit.sh; fi"
+        }
+      ]
+    }
+  ]
+}
+```

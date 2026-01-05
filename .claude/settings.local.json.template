@@ -1,0 +1,13 @@
+{
+  "_comment": "Copy this file to settings.local.json for user-specific overrides",
+  "_note": "This file is gitignored - your local settings won't be committed",
+
+  "permissions": {
+    "allow": [],
+    "deny": []
+  },
+
+  "env": {
+    "_example_API_KEY": "your-key-here"
+  }
+}

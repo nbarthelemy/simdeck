@@ -1,0 +1,27 @@
+{
+  "infrastructureVersion": "2.3.7",
+  "schemaVersion": "1.0.0",
+  "createdAt": "2026-01-03T00:00:00Z",
+  "lastUpdated": "2026-01-05T00:00:00Z",
+  "migratedFrom": null,
+  "generatedBy": "claudenv-init",
+  "changelog": {
+    "2.3.7": "Fix installer to preserve custom content, add infrastructure-* to deprecated list",
+    "2.3.6": "Convert commands to JSON-output pattern for inline formatting, add audit/debug/backup scripts",
+    "2.3.5": "Add check-update.sh and apply-update.sh for update command",
+    "2.3.4": "Add proposal-based skill/agent creation from patterns, fix grep exit code handling",
+    "2.3.3": "Add manifest-based updates to remove deprecated files while preserving user content",
+    "2.3.2": "Fix update command to stop when versions match, use cache buster for version check",
+    "2.3.1": "Add session hooks (start/stop/post-tool), automatic update check, agents inherit model",
+    "2.3.0": "Add subagent orchestration, 12 built-in agents, agent-creator skill, 50+ tech mappings",
+    "2.2.0": "Add /reflect command, automatic correction capture, Project Facts in CLAUDE.md",
+    "2.1.0": "Move distributable content to dist/, add symlinks for self-dogfooding",
+    "2.0.0": "Restructure repo - root IS .claude content, framework in rules/claudenv.md",
+    "1.0.6": "Add skill-creator skill with init, validate, package scripts",
+    "1.0.5": "Restructure skills to follow Agent Skills spec (references/, assets/)",
+    "1.0.4": "Rename skills, fix descriptions for auto-invoke",
+    "1.0.3": "Add /skills:triggers and /claudenv:audit commands",
+    "1.0.2": "Add /claudenv:mcp command for MCP server management",
+    "1.0.1": "Fix permissions format to use Bash(command:*) syntax"
+  }
+}

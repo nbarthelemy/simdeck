@@ -1,0 +1,426 @@
+{
+  "$schema": "https://claudenv.dev/schemas/lsp-mappings.json",
+  "_comment": "Maps file extensions and languages to LSP servers. Prefers official Anthropic plugins.",
+
+  "anthropic_plugins": {
+    "_comment": "Official Anthropic Claude Code plugins - install these first via /plugin install",
+    "typescript": "typescript-lsp@claude-plugins-official",
+    "python": "pyright-lsp@claude-plugins-official",
+    "go": "gopls-lsp@claude-plugins-official",
+    "rust": "rust-analyzer-lsp@claude-plugins-official",
+    "c": "clangd-lsp@claude-plugins-official",
+    "cpp": "clangd-lsp@claude-plugins-official",
+    "csharp": "csharp-lsp@claude-plugins-official",
+    "java": "jdtls-lsp@claude-plugins-official",
+    "php": "php-lsp@claude-plugins-official",
+    "lua": "lua-lsp@claude-plugins-official",
+    "swift": "swift-lsp@claude-plugins-official",
+    "ruby": "ruby-lsp@claude-plugins-official",
+    "kotlin": "kotlin-lsp@claude-plugins-official"
+  },
+
+  "servers": {
+    "typescript-language-server": {
+      "name": "TypeScript Language Server",
+      "languages": ["javascript", "typescript", "javascriptreact", "typescriptreact"],
+      "extensions": [".js", ".jsx", ".ts", ".tsx", ".mjs", ".cjs"],
+      "plugin": "typescript-lsp@claude-plugins-official",
+      "install": {
+        "npm": "npm install -g typescript-language-server typescript",
+        "pnpm": "pnpm add -g typescript-language-server typescript",
+        "yarn": "yarn global add typescript-language-server typescript"
+      },
+      "command": "typescript-language-server",
+      "args": ["--stdio"],
+      "check": "typescript-language-server --version",
+      "priority": 1
+    },
+
+    "pyright": {
+      "name": "Pyright",
+      "languages": ["python"],
+      "extensions": [".py", ".pyi", ".pyw"],
+      "plugin": "pyright-lsp@claude-plugins-official",
+      "install": {
+        "npm": "npm install -g pyright",
+        "pip": "pip install pyright"
+      },
+      "command": "pyright-langserver",
+      "args": ["--stdio"],
+      "check": "pyright --version",
+      "priority": 1
+    },
+
+    "python-lsp-server": {
+      "name": "Python LSP Server",
+      "languages": ["python"],
+      "extensions": [".py", ".pyi", ".pyw"],
+      "install": {
+        "pip": "pip install python-lsp-server[all]"
+      },
+      "command": "pylsp",
+      "args": [],
+      "check": "pylsp --version",
+      "priority": 2
+    },
+
+    "gopls": {
+      "name": "Go Language Server",
+      "languages": ["go"],
+      "extensions": [".go"],
+      "plugin": "gopls-lsp@claude-plugins-official",
+      "install": {
+        "go": "go install golang.org/x/tools/gopls@latest"
+      },
+      "command": "gopls",
+      "args": ["serve"],
+      "check": "gopls version",
+      "priority": 1
+    },
+
+    "rust-analyzer": {
+      "name": "Rust Analyzer",
+      "languages": ["rust"],
+      "extensions": [".rs"],
+      "plugin": "rust-analyzer-lsp@claude-plugins-official",
+      "install": {
+        "rustup": "rustup component add rust-analyzer",
+        "brew": "brew install rust-analyzer"
+      },
+      "command": "rust-analyzer",
+      "args": [],
+      "check": "rust-analyzer --version",
+      "priority": 1
+    },
+
+    "solargraph": {
+      "name": "Solargraph",
+      "languages": ["ruby"],
+      "extensions": [".rb", ".rake", ".gemspec"],
+      "plugin": "ruby-lsp@claude-plugins-official",
+      "install": {
+        "gem": "gem install solargraph"
+      },
+      "command": "solargraph",
+      "args": ["stdio"],
+      "check": "solargraph --version",
+      "priority": 1
+    },
+
+    "intelephense": {
+      "name": "Intelephense",
+      "languages": ["php"],
+      "extensions": [".php", ".phtml"],
+      "plugin": "php-lsp@claude-plugins-official",
+      "install": {
+        "npm": "npm install -g intelephense"
+      },
+      "command": "intelephense",
+      "args": ["--stdio"],
+      "check": "intelephense --version",
+      "priority": 1
+    },
+
+    "clangd": {
+      "name": "Clangd",
+      "languages": ["c", "cpp", "objective-c", "objective-cpp"],
+      "extensions": [".c", ".cpp", ".cc", ".cxx", ".h", ".hpp", ".hxx", ".m", ".mm"],
+      "plugin": "clangd-lsp@claude-plugins-official",
+      "install": {
+        "brew": "brew install llvm",
+        "apt": "apt install clangd"
+      },
+      "command": "clangd",
+      "args": [],
+      "check": "clangd --version",
+      "priority": 1
+    },
+
+    "jdtls": {
+      "name": "Eclipse JDT Language Server",
+      "languages": ["java"],
+      "extensions": [".java"],
+      "plugin": "jdtls-lsp@claude-plugins-official",
+      "install": {
+        "brew": "brew install jdtls"
+      },
+      "command": "jdtls",
+      "args": [],
+      "check": "jdtls --version",
+      "priority": 1
+    },
+
+    "omnisharp": {
+      "name": "OmniSharp",
+      "languages": ["csharp"],
+      "extensions": [".cs", ".csx"],
+      "plugin": "csharp-lsp@claude-plugins-official",
+      "install": {
+        "brew": "brew install omnisharp/omnisharp-roslyn/omnisharp-mono",
+        "dotnet": "dotnet tool install -g omnisharp"
+      },
+      "command": "omnisharp",
+      "args": ["--languageserver"],
+      "check": "omnisharp --version",
+      "priority": 1
+    },
+
+    "lua-language-server": {
+      "name": "Lua Language Server",
+      "languages": ["lua"],
+      "extensions": [".lua"],
+      "plugin": "lua-lsp@claude-plugins-official",
+      "install": {
+        "brew": "brew install lua-language-server"
+      },
+      "command": "lua-language-server",
+      "args": [],
+      "check": "lua-language-server --version",
+      "priority": 1
+    },
+
+    "bash-language-server": {
+      "name": "Bash Language Server",
+      "languages": ["bash", "sh", "shell"],
+      "extensions": [".sh", ".bash", ".zsh"],
+      "install": {
+        "npm": "npm install -g bash-language-server"
+      },
+      "command": "bash-language-server",
+      "args": ["start"],
+      "check": "bash-language-server --version",
+      "priority": 1
+    },
+
+    "yaml-language-server": {
+      "name": "YAML Language Server",
+      "languages": ["yaml"],
+      "extensions": [".yml", ".yaml"],
+      "install": {
+        "npm": "npm install -g yaml-language-server"
+      },
+      "command": "yaml-language-server",
+      "args": ["--stdio"],
+      "check": "yaml-language-server --version",
+      "priority": 1
+    },
+
+    "vscode-json-languageserver": {
+      "name": "JSON Language Server",
+      "languages": ["json", "jsonc"],
+      "extensions": [".json", ".jsonc"],
+      "install": {
+        "npm": "npm install -g vscode-json-languageserver"
+      },
+      "command": "vscode-json-languageserver",
+      "args": ["--stdio"],
+      "check": "vscode-json-languageserver --version",
+      "priority": 1
+    },
+
+    "vscode-langservers-extracted": {
+      "name": "HTML/CSS Language Server",
+      "languages": ["html", "css", "scss", "less"],
+      "extensions": [".html", ".htm", ".css", ".scss", ".less"],
+      "install": {
+        "npm": "npm install -g vscode-langservers-extracted"
+      },
+      "command": "vscode-html-language-server",
+      "args": ["--stdio"],
+      "check": "vscode-html-language-server --version",
+      "priority": 1
+    },
+
+    "marksman": {
+      "name": "Marksman",
+      "languages": ["markdown"],
+      "extensions": [".md", ".markdown"],
+      "install": {
+        "brew": "brew install marksman"
+      },
+      "command": "marksman",
+      "args": ["server"],
+      "check": "marksman --version",
+      "priority": 1
+    },
+
+    "dockerfile-language-server": {
+      "name": "Dockerfile Language Server",
+      "languages": ["dockerfile"],
+      "extensions": ["Dockerfile"],
+      "files": ["Dockerfile", "Dockerfile.*", "*.dockerfile"],
+      "install": {
+        "npm": "npm install -g dockerfile-language-server-nodejs"
+      },
+      "command": "docker-langserver",
+      "args": ["--stdio"],
+      "check": "docker-langserver --version",
+      "priority": 1
+    },
+
+    "terraform-ls": {
+      "name": "Terraform Language Server",
+      "languages": ["terraform", "hcl"],
+      "extensions": [".tf", ".tfvars", ".hcl"],
+      "install": {
+        "brew": "brew install terraform-ls"
+      },
+      "command": "terraform-ls",
+      "args": ["serve"],
+      "check": "terraform-ls --version",
+      "priority": 1
+    },
+
+    "zls": {
+      "name": "Zig Language Server",
+      "languages": ["zig"],
+      "extensions": [".zig"],
+      "install": {
+        "brew": "brew install zls"
+      },
+      "command": "zls",
+      "args": [],
+      "check": "zls --version",
+      "priority": 1
+    },
+
+    "svelte-language-server": {
+      "name": "Svelte Language Server",
+      "languages": ["svelte"],
+      "extensions": [".svelte"],
+      "install": {
+        "npm": "npm install -g svelte-language-server"
+      },
+      "command": "svelteserver",
+      "args": ["--stdio"],
+      "check": "svelteserver --version",
+      "priority": 1
+    },
+
+    "vue-language-server": {
+      "name": "Vue Language Server (Volar)",
+      "languages": ["vue"],
+      "extensions": [".vue"],
+      "install": {
+        "npm": "npm install -g @vue/language-server"
+      },
+      "command": "vue-language-server",
+      "args": ["--stdio"],
+      "check": "vue-language-server --version",
+      "priority": 1
+    },
+
+    "graphql-lsp": {
+      "name": "GraphQL Language Server",
+      "languages": ["graphql"],
+      "extensions": [".graphql", ".gql"],
+      "install": {
+        "npm": "npm install -g graphql-language-service-cli"
+      },
+      "command": "graphql-lsp",
+      "args": ["server", "-m", "stream"],
+      "check": "graphql-lsp --version",
+      "priority": 1
+    },
+
+    "elixir-ls": {
+      "name": "Elixir Language Server",
+      "languages": ["elixir"],
+      "extensions": [".ex", ".exs"],
+      "install": {
+        "brew": "brew install elixir-ls"
+      },
+      "command": "elixir-ls",
+      "args": [],
+      "check": "elixir-ls --version",
+      "priority": 1
+    },
+
+    "erlang-ls": {
+      "name": "Erlang Language Server",
+      "languages": ["erlang"],
+      "extensions": [".erl", ".hrl"],
+      "install": {
+        "brew": "brew install erlang-ls"
+      },
+      "command": "erlang_ls",
+      "args": [],
+      "check": "erlang_ls --version",
+      "priority": 1
+    },
+
+    "kotlin-language-server": {
+      "name": "Kotlin Language Server",
+      "languages": ["kotlin"],
+      "extensions": [".kt", ".kts"],
+      "plugin": "kotlin-lsp@claude-plugins-official",
+      "install": {
+        "brew": "brew install kotlin-language-server"
+      },
+      "command": "kotlin-language-server",
+      "args": [],
+      "check": "kotlin-language-server --version",
+      "priority": 1
+    },
+
+    "scala-metals": {
+      "name": "Metals (Scala)",
+      "languages": ["scala"],
+      "extensions": [".scala", ".sc"],
+      "install": {
+        "brew": "brew install coursier && cs install metals"
+      },
+      "command": "metals",
+      "args": [],
+      "check": "metals --version",
+      "priority": 1
+    }
+  },
+
+  "extension_to_language": {
+    ".js": "javascript",
+    ".jsx": "javascriptreact",
+    ".ts": "typescript",
+    ".tsx": "typescriptreact",
+    ".mjs": "javascript",
+    ".cjs": "javascript",
+    ".py": "python",
+    ".pyi": "python",
+    ".go": "go",
+    ".rs": "rust",
+    ".rb": "ruby",
+    ".rake": "ruby",
+    ".php": "php",
+    ".c": "c",
+    ".cpp": "cpp",
+    ".cc": "cpp",
+    ".h": "c",
+    ".hpp": "cpp",
+    ".java": "java",
+    ".cs": "csharp",
+    ".lua": "lua",
+    ".sh": "bash",
+    ".bash": "bash",
+    ".zsh": "bash",
+    ".yml": "yaml",
+    ".yaml": "yaml",
+    ".json": "json",
+    ".html": "html",
+    ".css": "css",
+    ".scss": "scss",
+    ".less": "less",
+    ".md": "markdown",
+    ".tf": "terraform",
+    ".zig": "zig",
+    ".svelte": "svelte",
+    ".vue": "vue",
+    ".graphql": "graphql",
+    ".gql": "graphql",
+    ".ex": "elixir",
+    ".exs": "elixir",
+    ".erl": "erlang",
+    ".kt": "kotlin",
+    ".kts": "kotlin",
+    ".scala": "scala"
+  }
+}

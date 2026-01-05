@@ -1,0 +1,158 @@
+{
+  "keyword_triggers": {
+    "enabled": true,
+    "patterns": [
+      {
+        "match": "refactor.*entire|whole.*codebase|all files|across.*codebase",
+        "agents": ["code-reviewer", "test-engineer"],
+        "parallel": true,
+        "description": "Large-scale refactoring"
+      },
+      {
+        "match": "add tests.*and.*document|tests.*documentation",
+        "agents": ["test-engineer", "documentation-writer"],
+        "parallel": true,
+        "description": "Testing and documentation"
+      },
+      {
+        "match": "security.*audit|vulnerability.*scan|security.*review",
+        "agents": ["security-auditor"],
+        "parallel": false,
+        "description": "Security audit"
+      },
+      {
+        "match": "optimize.*performance|speed up|slow|performance.*issue",
+        "agents": ["performance-analyst"],
+        "parallel": false,
+        "description": "Performance optimization"
+      },
+      {
+        "match": "full.*review|comprehensive.*analysis|code.*review.*all",
+        "agents": ["code-reviewer", "security-auditor", "test-engineer"],
+        "parallel": true,
+        "description": "Comprehensive review"
+      },
+      {
+        "match": "accessibility|a11y|wcag|screen reader",
+        "agents": ["accessibility-checker"],
+        "parallel": false,
+        "description": "Accessibility audit"
+      },
+      {
+        "match": "release|version.*bump|changelog|deploy.*production",
+        "agents": ["release-manager", "test-engineer"],
+        "parallel": false,
+        "description": "Release coordination"
+      },
+      {
+        "match": "migrate|upgrade|modernize|legacy",
+        "agents": ["migration-specialist", "test-engineer"],
+        "parallel": false,
+        "description": "Migration work"
+      },
+      {
+        "match": "api.*design|endpoint.*design|schema.*design",
+        "agents": ["api-designer"],
+        "parallel": false,
+        "description": "API design"
+      },
+      {
+        "match": "ci.?cd|pipeline|deploy|infrastructure|docker|kubernetes",
+        "agents": ["devops-engineer"],
+        "parallel": false,
+        "description": "DevOps work"
+      }
+    ]
+  },
+  "complexity_triggers": {
+    "enabled": true,
+    "rules": [
+      {
+        "condition": "file_count > 5 AND domain_count > 1",
+        "agents": ["code-reviewer"],
+        "description": "Multi-file, multi-domain changes"
+      },
+      {
+        "condition": "file_types INCLUDES ['*.tsx', '*.css'] AND file_count > 3",
+        "agents": ["frontend-developer", "accessibility-checker"],
+        "description": "Significant frontend work"
+      },
+      {
+        "condition": "file_types INCLUDES ['*.sql', '*.prisma'] AND has_api_changes",
+        "agents": ["backend-architect", "api-designer"],
+        "description": "Database and API changes"
+      }
+    ]
+  },
+  "task_patterns": {
+    "enabled": true,
+    "patterns": [
+      {
+        "match": "build.*feature.*with.*tests",
+        "phases": [
+          {"phase": "pre", "agents": ["code-reviewer"], "description": "Analyze existing patterns"},
+          {"phase": "main", "agents": null, "description": "Implement feature"},
+          {"phase": "post", "agents": ["test-engineer", "documentation-writer"], "description": "Add tests and docs"}
+        ]
+      },
+      {
+        "match": "fix.*bug.*and.*test",
+        "phases": [
+          {"phase": "pre", "agents": ["code-reviewer"], "description": "Analyze bug context"},
+          {"phase": "main", "agents": null, "description": "Fix bug"},
+          {"phase": "post", "agents": ["test-engineer"], "description": "Add regression test"}
+        ]
+      }
+    ]
+  },
+  "agent_capabilities": {
+    "frontend-developer": {
+      "file_patterns": ["*.tsx", "*.jsx", "*.vue", "*.svelte", "*.css", "*.scss", "*.tailwind"],
+      "keywords": ["ui", "component", "css", "styling", "layout", "responsive", "animation", "frontend"]
+    },
+    "backend-architect": {
+      "file_patterns": ["*.py", "*.go", "*.rs", "*.java", "*.rb", "*.ts"],
+      "keywords": ["api", "database", "service", "endpoint", "server", "backend", "microservice"]
+    },
+    "api-designer": {
+      "file_patterns": ["*.yaml", "*.json", "openapi.*", "swagger.*", "*.graphql"],
+      "keywords": ["api", "endpoint", "schema", "openapi", "graphql", "rest"]
+    },
+    "devops-engineer": {
+      "file_patterns": ["Dockerfile", "docker-compose.*", "*.yaml", ".github/workflows/*", "terraform/*"],
+      "keywords": ["deploy", "ci", "cd", "docker", "kubernetes", "infrastructure", "pipeline"]
+    },
+    "code-reviewer": {
+      "file_patterns": ["*"],
+      "keywords": ["review", "quality", "refactor", "patterns", "best practices"]
+    },
+    "security-auditor": {
+      "file_patterns": ["*"],
+      "keywords": ["security", "vulnerability", "auth", "encryption", "xss", "injection"]
+    },
+    "performance-analyst": {
+      "file_patterns": ["*"],
+      "keywords": ["performance", "optimize", "slow", "benchmark", "profiling", "memory"]
+    },
+    "accessibility-checker": {
+      "file_patterns": ["*.tsx", "*.jsx", "*.vue", "*.html", "*.svelte"],
+      "keywords": ["accessibility", "a11y", "wcag", "aria", "screen reader"]
+    },
+    "test-engineer": {
+      "file_patterns": ["*.test.*", "*.spec.*", "*_test.*", "test_*.*"],
+      "keywords": ["test", "testing", "coverage", "tdd", "jest", "pytest", "playwright"]
+    },
+    "documentation-writer": {
+      "file_patterns": ["*.md", "*.mdx", "*.rst", "README*", "CHANGELOG*"],
+      "keywords": ["docs", "documentation", "readme", "guide", "tutorial"]
+    },
+    "release-manager": {
+      "file_patterns": ["package.json", "CHANGELOG*", "version.*"],
+      "keywords": ["release", "version", "changelog", "deploy", "publish"]
+    },
+    "migration-specialist": {
+      "file_patterns": ["*"],
+      "keywords": ["migrate", "upgrade", "refactor", "modernize", "legacy", "transition"]
+    }
+  }
+}
