@@ -2,97 +2,42 @@
 
 > Complete Claude Code infrastructure for autonomous development
 
-## Autonomy Level: High
-
-You have broad autonomy within this project. Act decisively, don't ask for permission on routine tasks.
-
-### Do Without Asking (Full Autonomy)
-
-- Read any file in the project
-- Edit/create/delete files in `.claude/` directory
-- Edit/create files in source directories to complete tasks
-- Run read-only commands (ls, cat, grep, find, git status, git log, etc.)
-- Run diagnostics and linters
-- Consult external documentation (UNFETTERED access)
-- Invoke tools including mcp__ide__getDiagnostics
-- Search the web for documentation or solutions
-- Delegate to specialist skills
-- Create new skills, hooks, and commands
-- Run tests
-- Install dev dependencies
-- Format and lint code
-- Git operations: add, commit, branch, checkout, stash
-- Run build commands
-- Scrape documentation sites
-- Create backups before major changes
-
-### Notify After (Inform User)
-
-- Creating new skills (brief notification after creation)
-- Modifying project configuration files
-- Installing production dependencies
-- Significant refactors spanning 5+ files
-- Deleting source files (not in .claude/)
-- Modifying environment files
-- Migrating/merging existing CLAUDE.md files
-- Auto-creating skills, hooks, commands at threshold
-
-### Ask First (Requires Approval)
-
-- Pushing to remote repositories
-- Deploying to any environment
-- Operations involving secrets, API keys, credentials
-- Modifying CI/CD pipelines
-- Database migrations on non-local databases
-- Actions with billing implications
-- Irreversible destructive operations outside the project
-- Publishing packages
-
-### Error Recovery (Autonomous)
-
-- If a command fails, try alternative approaches
-- If a file edit breaks something, fix it
-- If tests fail after changes, debug and resolve
-- If dependencies conflict, resolve them
-- Only escalate to user after 3 failed attempts at resolution
-
----
-
 ## Quick Reference
 
 ### Key Commands
 
 | Command | Description |
 |---------|-------------|
+| `/spec` | Full project setup: interview, tech detect, CLAUDE.md, TODO.md |
+| `/prime` | Load comprehensive project context (auto-runs at session start) |
+| `/feature <name>` | Plan a feature, save to `.claude/plans/` |
+| `/next` | Interactive feature workflow - pick, plan, execute with confirmations |
+| `/autopilot` | Fully autonomous feature completion from TODO.md |
+| `/execute <plan>` | Execute plan via `/loop --plan` + `/validate` |
+| `/validate` | Run stack-aware validation (lint, type-check, test, build) |
+| `/rca <issue>` | Root cause analysis for bugs |
 | `/claudenv` | Bootstrap infrastructure for current project |
 | `/interview` | Conduct project specification interview |
 | `/loop` | Start autonomous iterative development loop |
-| `/loop:status` | Check current loop progress |
-| `/loop:pause` | Pause active loop |
-| `/loop:resume` | Resume paused loop |
-| `/loop:cancel` | Stop and cancel active loop |
+| `/loop --plan <file>` | Execute structured plan file (phases/tasks) |
+| `/loop status` | Check current loop progress |
+| `/loop pause` | Pause active loop |
+| `/loop resume` | Resume paused loop |
+| `/loop cancel` | Stop and cancel active loop |
 | `/lsp` | Auto-detect and install LSP servers |
 | `/lsp:status` | Check LSP server status |
 | `/claudenv:status` | Show system overview |
 | `/health:check` | Verify infrastructure integrity |
 | `/learn:review` | Review pending automation proposals |
 | `/reflect` | Consolidate learnings, update project knowledge |
+| `/reflect evolve` | Analyze failures and propose system improvements |
 | `/analyze-patterns` | Force pattern analysis |
+| `/skills:triggers` | List skill trigger keywords and phrases |
+| `/agents:triggers` | List agent trigger keywords and phrases |
 
 ### Skills (Auto-Invoked)
 
-| Skill | Triggers On |
-|-------|-------------|
-| `tech-detection` | Project analysis, stack detection |
-| `project-interview` | Specification interviews, requirements gathering |
-| `pattern-observer` | Pattern observation, learning consolidation, automation suggestions |
-| `meta-skill` | Creating new skills for unfamiliar tech |
-| `skill-creator` | Scaffolding and validating skill directories |
-| `frontend-design` | UI, UX, CSS, styling, Tailwind, layout, animation, visual design |
-| `autonomous-loop` | Autonomous iterative loops, persistent development |
-| `lsp-setup` | Auto-detects and installs language servers |
-| `orchestrator` | Complex tasks, parallel execution, "comprehensive", "full review" |
-| `agent-creator` | Creates specialist subagents for detected technologies |
+Skills auto-invoke based on triggers in `.claude/skills/triggers.json`. See `@rules/trigger-reference.md` for full trigger list.
 
 ### Directory Structure
 
@@ -104,17 +49,180 @@ You have broad autonomy within this project. Act decisively, don't ask for permi
 ├── project-context.json # Detected tech stack
 ├── commands/           # Slash commands
 ├── skills/             # Auto-invoked capabilities
+│   └── triggers.json   # Skill trigger configuration
 ├── agents/             # Specialist subagents for orchestration
+│   └── triggers.json   # Agent trigger configuration
 ├── orchestration/      # Orchestration config (triggers, limits)
 ├── rules/              # Modular instruction sets
 ├── scripts/            # Shell scripts for hooks
 ├── templates/          # Templates for generation
+├── reference/          # Curated best practices docs (read by /prime)
+├── plans/              # Feature implementation plans (/feature output)
+├── rca/                # Root cause analysis documents (/rca output)
 ├── learning/           # Pattern observations
 ├── loop/               # Autonomous loop state & history
 ├── lsp-config.json     # Installed LSP servers (generated)
 ├── logs/               # Execution logs
 └── backups/            # Auto-backups
 ```
+
+---
+
+## PIV Workflow (Prime-Implement-Validate)
+
+A structured approach to feature development that ensures context-rich, one-pass implementation success.
+
+### Overview
+
+```
+/spec → /prime → /feature → /execute → /validate
+         │                      │
+         │                      └── calls /loop --plan + /validate
+         │
+         └── auto-runs at session start
+```
+
+**Workflow Options:**
+- **Interactive**: `/next` - Pick features, confirm each step
+- **Autonomous**: `/autopilot` - Complete all features without interaction
+
+### /spec - Project Setup
+
+Full project initialization:
+
+```bash
+/spec
+```
+
+1. Runs `/interview` for deep questioning
+2. Detects tech stack via `detect-stack.sh`
+3. Refines CLAUDE.md with project rules
+4. Extracts features from SPEC.md
+5. Populates TODO.md with features
+
+### /prime - Context Loading
+
+Runs automatically at session start. Loads:
+- Project structure and tech stack
+- Documentation (CLAUDE.md, SPEC.md, README)
+- Reference materials from `.claude/reference/`
+- Current git state and recent changes
+- Active work (TODO.md, existing plans)
+
+### /feature - Feature Planning
+
+Creates persistent implementation plans:
+
+```bash
+/feature "Add user authentication"
+```
+
+Outputs to `.claude/plans/add-user-authentication.md`:
+- Overview and user stories
+- Implementation phases with atomic tasks
+- Testing strategy
+- Validation commands
+- Acceptance criteria
+
+### /execute - Plan Execution
+
+Thin orchestrator that delegates work:
+
+```bash
+/execute .claude/plans/add-user-authentication.md
+```
+
+1. Calls `/loop --plan <file>` to execute tasks
+2. Runs `/validate` after completion
+3. Updates TODO.md on success
+
+### /next - Interactive Workflow
+
+Work through features one at a time with confirmation:
+
+```bash
+/next
+```
+
+1. Shows available features from TODO.md
+2. Creates plan if needed via `/feature`
+3. Confirms before each execution
+4. Asks "Continue to next?" after completion
+
+### /autopilot - Fully Autonomous
+
+Complete all features without interaction:
+
+```bash
+/autopilot                    # Complete all features
+/autopilot --max-features 3   # Limit to 3 features
+/autopilot --dry-run         # Show plan only
+/autopilot --pause-on-failure # Stop on first failure
+```
+
+Safety limits: 4h max time, $50 max cost, no git push, no deploy.
+
+### /validate - Stack-Aware Validation
+
+Runs appropriate checks for detected tech stack:
+
+```bash
+/validate           # Full validation
+/validate --fix     # Auto-fix lint issues
+/validate --quick   # Skip slow checks
+```
+
+Automatically runs: lint, type-check, test, build
+
+### /rca - Root Cause Analysis
+
+For bug investigation before fixing:
+
+```bash
+/rca #123                          # GitHub issue
+/rca "Login fails after reset"     # Description
+```
+
+Creates `.claude/rca/{slug}.md` with:
+- Issue summary and reproduction steps
+- Root cause identification
+- Impact assessment
+- Proposed fix strategy
+- Testing plan
+
+---
+
+## Reference Documentation
+
+Store curated best practices in `.claude/reference/`. These are read during `/prime` to provide stack-specific guidance.
+
+### Purpose
+
+Reference docs help Claude:
+- Follow framework-specific patterns
+- Avoid common pitfalls
+- Use idiomatic code
+- Understand project conventions
+
+### Suggested Files
+
+| Stack | Suggested Reference Docs |
+|-------|-------------------------|
+| **React** | `react-best-practices.md`, `state-management.md` |
+| **FastAPI** | `fastapi-best-practices.md`, `pydantic-patterns.md` |
+| **Next.js** | `nextjs-best-practices.md`, `routing-patterns.md` |
+| **Go** | `go-conventions.md`, `error-handling.md` |
+| **Testing** | `testing-strategy.md`, `e2e-patterns.md` |
+
+### Creating Reference Docs
+
+Each doc should include:
+1. Key principles
+2. Common patterns with examples
+3. Anti-patterns to avoid
+4. Project-specific conventions
+
+See `.claude/reference/README.md` for templates.
 
 ---
 
@@ -130,7 +238,11 @@ Claude automatically spawns specialist subagents for complex parallel tasks.
 | **Analysis** | `code-reviewer`, `security-auditor`, `performance-analyst`, `accessibility-checker` |
 | **Process** | `test-engineer`, `documentation-writer`, `release-manager`, `migration-specialist` |
 
-### Trigger Conditions
+### Agent Triggers
+
+Agents are routed based on triggers in `.claude/agents/triggers.json`. See `@rules/trigger-reference.md` for full trigger list.
+
+### Orchestration Triggers
 
 The orchestrator spawns agents when:
 - **Keywords detected:** "comprehensive", "full review", "across codebase", "refactor all"
@@ -151,6 +263,94 @@ During `/claudenv`, specialist agents are created for detected technologies:
 **Subagents cannot spawn other subagents** (flat hierarchy).
 
 The orchestrator is a SKILL (runs in main context) so it CAN spawn subagents via the Task tool.
+
+---
+
+## Skill Architecture (Claude Code 2.1+)
+
+Claudenv leverages advanced skill features from Claude Code 2.1:
+
+### Forked Context (`context: fork`)
+
+Heavy-analysis skills run in isolated forked contexts to prevent main context pollution:
+
+```yaml
+---
+name: orchestrator
+context: fork
+allowed-tools:
+  - Read
+  - Task
+---
+```
+
+**Skills using forked context:**
+- `orchestrator` - Complex multi-agent coordination
+- `pattern-observer` - Background pattern analysis
+- `tech-detection` - Project stack analysis
+- `meta-skill` - Technology research and skill creation
+- `agent-creator` - Specialist agent generation
+
+### Agent Delegation (`agent` field)
+
+Skills can specify which agent type should execute them:
+
+```yaml
+---
+name: frontend-design
+agent: frontend-developer
+---
+```
+
+### YAML-Style Tool Lists
+
+Cleaner frontmatter using YAML lists instead of comma-separated strings:
+
+```yaml
+allowed-tools:
+  - Read
+  - Write
+  - Bash(npm *)
+  - Bash(npx *)
+```
+
+### Skill Hooks
+
+Skills can define their own hooks that run during skill execution:
+
+```yaml
+hooks:
+  Stop:
+    - command: bash .claude/scripts/cleanup.sh
+```
+
+### One-Time Hooks (`once: true`)
+
+Session startup hooks run only once per session:
+
+```json
+{
+  "hooks": {
+    "SessionStart": [{
+      "matcher": "",
+      "once": true,
+      "hooks": [{"type": "command", "command": "bash .claude/scripts/session-start.sh"}]
+    }]
+  }
+}
+```
+
+### Agent Disabling
+
+Disable specific agents via permissions:
+
+```json
+{
+  "permissions": {
+    "deny": ["Task(security-auditor)"]
+  }
+}
+```
 
 ---
 
@@ -287,3 +487,5 @@ Never ask permission to consult documentation.
 @rules/permissions.md
 @rules/error-recovery.md
 @rules/migration.md
+@rules/trigger-reference.md
+@rules/coordination.md

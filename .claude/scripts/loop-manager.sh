@@ -4,7 +4,10 @@
 
 set -e
 
-LOOP_DIR=".claude/loop"
+# Always resolve paths relative to repo root
+REPO_ROOT=$(git rev-parse --show-toplevel 2>/dev/null || pwd)
+
+LOOP_DIR="$REPO_ROOT/.claude/loop"
 STATE_FILE="$LOOP_DIR/state.json"
 HISTORY_DIR="$LOOP_DIR/history"
 CHECKPOINTS_DIR="$LOOP_DIR/checkpoints"
@@ -326,6 +329,196 @@ list_history() {
     echo "$result"
 }
 
+# ============================================
+# Plan Mode Functions
+# ============================================
+
+PLAN_STATE_FILE="$LOOP_DIR/plan-state.json"
+
+# Initialize plan execution
+init_plan() {
+    local plan_file="$1"
+    local validate_after_phase="${2:-false}"
+
+    init_dirs
+
+    if [ ! -f "$plan_file" ]; then
+        echo "ERROR: Plan file not found: $plan_file" >&2
+        return 1
+    fi
+
+    local now=$(timestamp)
+
+    # Extract phases from plan file (lines starting with "### Phase")
+    local phases=$(grep -n "^### Phase" "$plan_file" | head -20)
+    local phase_count=$(echo "$phases" | grep -c "Phase" || echo "0")
+
+    # Count tasks (lines with "- [ ] **Task")
+    local task_count=$(grep -c "\- \[ \] \*\*Task" "$plan_file" || echo "0")
+
+    cat > "$PLAN_STATE_FILE" << EOF
+{
+  "planFile": "$plan_file",
+  "status": "running",
+  "startedAt": "$now",
+  "validateAfterPhase": $validate_after_phase,
+  "currentPhase": 1,
+  "currentTask": null,
+  "totalPhases": $phase_count,
+  "totalTasks": $task_count,
+  "tasksCompleted": [],
+  "phasesCompleted": [],
+  "validationResults": {}
+}
+EOF
+
+    echo "$PLAN_STATE_FILE"
+}
+
+# Get next uncompleted task from plan
+get_next_plan_task() {
+    if [ ! -f "$PLAN_STATE_FILE" ]; then
+        echo "ERROR: No plan state" >&2
+        return 1
+    fi
+
+    local plan_file=$(jq -r '.planFile' "$PLAN_STATE_FILE")
+    local completed=$(jq -r '.tasksCompleted | join("|")' "$PLAN_STATE_FILE")
+
+    # Find first unchecked task
+    local task_line=$(grep -n "\- \[ \] \*\*Task" "$plan_file" | head -1)
+
+    if [ -z "$task_line" ]; then
+        echo "PLAN_COMPLETE"
+        return 0
+    fi
+
+    # Extract task ID and description
+    local line_num=$(echo "$task_line" | cut -d: -f1)
+    local task_text=$(echo "$task_line" | cut -d: -f2-)
+
+    # Parse task ID (e.g., "Task 1.1" -> "1.1")
+    local task_id=$(echo "$task_text" | grep -o "Task [0-9.]*" | sed 's/Task //')
+
+    echo "{\"lineNumber\": $line_num, \"taskId\": \"$task_id\", \"text\": $(echo "$task_text" | jq -Rs .)}"
+}
+
+# Mark task complete in plan state and file
+complete_plan_task() {
+    local task_id="$1"
+
+    if [ ! -f "$PLAN_STATE_FILE" ]; then
+        echo "ERROR: No plan state" >&2
+        return 1
+    fi
+
+    local plan_file=$(jq -r '.planFile' "$PLAN_STATE_FILE")
+    local now=$(timestamp)
+
+    # Add to completed list
+    jq ".tasksCompleted += [\"$task_id\"] | .currentTask = \"$task_id\" | .lastUpdated = \"$now\"" "$PLAN_STATE_FILE" > "$PLAN_STATE_FILE.tmp"
+    mv "$PLAN_STATE_FILE.tmp" "$PLAN_STATE_FILE"
+
+    # Update plan file: change [ ] to [x] for this task
+    if [[ "$OSTYPE" == "darwin"* ]]; then
+        sed -i '' "s/\- \[ \] \*\*Task $task_id\*\*/- [x] **Task $task_id**/" "$plan_file"
+    else
+        sed -i "s/\- \[ \] \*\*Task $task_id\*\*/- [x] **Task $task_id**/" "$plan_file"
+    fi
+
+    echo "TASK_COMPLETE: $task_id"
+}
+
+# Mark phase complete
+complete_plan_phase() {
+    local phase_name="$1"
+
+    if [ ! -f "$PLAN_STATE_FILE" ]; then
+        echo "ERROR: No plan state" >&2
+        return 1
+    fi
+
+    local now=$(timestamp)
+    local current=$(jq -r '.currentPhase' "$PLAN_STATE_FILE")
+
+    jq ".phasesCompleted += [\"$phase_name\"] | .currentPhase = $((current + 1)) | .lastUpdated = \"$now\"" "$PLAN_STATE_FILE" > "$PLAN_STATE_FILE.tmp"
+    mv "$PLAN_STATE_FILE.tmp" "$PLAN_STATE_FILE"
+
+    echo "PHASE_COMPLETE: $phase_name"
+}
+
+# Record phase validation result
+record_phase_validation() {
+    local phase_name="$1"
+    local passed="$2"
+    local output="$3"
+
+    if [ ! -f "$PLAN_STATE_FILE" ]; then
+        return 1
+    fi
+
+    jq ".validationResults[\"$phase_name\"] = {\"passed\": $passed, \"output\": $(echo "$output" | jq -Rs .)}" "$PLAN_STATE_FILE" > "$PLAN_STATE_FILE.tmp"
+    mv "$PLAN_STATE_FILE.tmp" "$PLAN_STATE_FILE"
+}
+
+# Check if plan is complete
+is_plan_complete() {
+    if [ ! -f "$PLAN_STATE_FILE" ]; then
+        echo "false"
+        return
+    fi
+
+    local plan_file=$(jq -r '.planFile' "$PLAN_STATE_FILE")
+
+    # Check if any unchecked tasks remain
+    local remaining=$(grep -c "\- \[ \] \*\*Task" "$plan_file" || echo "0")
+
+    if [ "$remaining" -eq 0 ]; then
+        echo "true"
+    else
+        echo "false"
+    fi
+}
+
+# Complete plan execution
+complete_plan() {
+    local reason="${1:-all_tasks_done}"
+
+    if [ ! -f "$PLAN_STATE_FILE" ]; then
+        echo "ERROR: No plan state" >&2
+        return 1
+    fi
+
+    local plan_file=$(jq -r '.planFile' "$PLAN_STATE_FILE")
+    local now=$(timestamp)
+
+    # Update plan state
+    jq ".status = \"complete\" | .completedAt = \"$now\" | .completionReason = \"$reason\"" "$PLAN_STATE_FILE" > "$PLAN_STATE_FILE.tmp"
+    mv "$PLAN_STATE_FILE.tmp" "$PLAN_STATE_FILE"
+
+    # Update plan file status
+    if [[ "$OSTYPE" == "darwin"* ]]; then
+        sed -i '' 's/> Status: .*/> Status: completed/' "$plan_file"
+    else
+        sed -i 's/> Status: .*/> Status: completed/' "$plan_file"
+    fi
+
+    # Archive plan state
+    local plan_id=$(basename "$plan_file" .md)
+    mv "$PLAN_STATE_FILE" "$HISTORY_DIR/plan-${plan_id}-$(date +%Y%m%d_%H%M%S).json"
+
+    echo "PLAN_COMPLETE"
+}
+
+# Get plan state
+get_plan_state() {
+    if [ -f "$PLAN_STATE_FILE" ]; then
+        cat "$PLAN_STATE_FILE"
+    else
+        echo "{}"
+    fi
+}
+
 # Main dispatcher
 case "${1:-}" in
     init)
@@ -373,9 +566,46 @@ case "${1:-}" in
     active)
         is_active && echo "true" || echo "false"
         ;;
+    # Plan mode actions
+    init_plan)
+        shift
+        init_plan "$@"
+        ;;
+    next_task)
+        get_next_plan_task
+        ;;
+    complete_task)
+        shift
+        complete_plan_task "$@"
+        ;;
+    complete_phase)
+        shift
+        complete_plan_phase "$@"
+        ;;
+    record_validation)
+        shift
+        record_phase_validation "$@"
+        ;;
+    plan_complete)
+        is_plan_complete
+        ;;
+    finish_plan)
+        shift
+        complete_plan "$@"
+        ;;
+    plan_state)
+        get_plan_state
+        ;;
     *)
         echo "Usage: loop-manager.sh <action> [args]"
-        echo "Actions: init, next, checkpoint, complete, pause, resume, cancel, error, check, status, state, history, active"
+        echo ""
+        echo "Loop Actions:"
+        echo "  init, next, checkpoint, complete, pause, resume, cancel"
+        echo "  error, check, status, state, history, active"
+        echo ""
+        echo "Plan Mode Actions:"
+        echo "  init_plan, next_task, complete_task, complete_phase"
+        echo "  record_validation, plan_complete, finish_plan, plan_state"
         exit 1
         ;;
 esac

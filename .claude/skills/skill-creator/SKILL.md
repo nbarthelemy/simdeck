@@ -1,7 +1,12 @@
 ---
 name: skill-creator
 description: Creates new skills with proper structure and validation. Use when creating a skill, initializing a new skill, scaffolding skill directories, or packaging skills for distribution. Provides templates, validation, and best practices for skill development.
-allowed-tools: Write, Read, Glob, Bash(*), Edit
+allowed-tools:
+  - Write
+  - Read
+  - Glob
+  - Bash(*)
+  - Edit
 ---
 
 # Skill Creator

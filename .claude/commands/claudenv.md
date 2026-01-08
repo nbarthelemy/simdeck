@@ -172,7 +172,17 @@ See `.claude/skills/agent-creator/references/tech-agent-mappings.md` for full ma
 **Note**: Only create agents for technologies that need deep specialist knowledge.
 Generic agents (code-reviewer, security-auditor, etc.) are already included.
 
-### Step 10: Final Validation
+### Step 10: Generate Trigger Reference
+
+Generate the trigger reference file that Claude uses to match user requests to skills/agents:
+
+```bash
+bash .claude/scripts/generate-trigger-reference.sh
+```
+
+**Validation**: Verify `.claude/rules/trigger-reference.md` exists and contains skill/agent trigger mappings.
+
+### Step 11: Final Validation
 
 Run comprehensive validation to ensure everything was created:
 
@@ -205,12 +215,15 @@ bash .claude/scripts/validate.sh
 - ✅ `.claude/learning/pending-commands.md`
 - ✅ `.claude/learning/pending-hooks.md`
 
+**Trigger reference:**
+- ✅ `.claude/rules/trigger-reference.md` exists
+
 **If ANY validation fails:**
 1. Create missing files/directories
 2. Fix permissions (`chmod +x` for scripts)
 3. Re-run validation until all pass
 
-### Step 11: Report Results
+### Step 12: Report Results
 
 Output a summary:
 

@@ -13,6 +13,7 @@ Analyze the current session and consolidate learnings into project knowledge.
 - `/reflect deep` - Comprehensive review of all learning files
 - `/reflect prune` - Remove stale/obsolete entries
 - `/reflect facts` - Review and consolidate Project Facts in CLAUDE.md
+- `/reflect evolve` - Analyze failures and propose system improvements
 
 ## Core Philosophy
 
@@ -261,3 +262,159 @@ When adding/updating entries, use this format:
 - One-time fixes unlikely to recur
 - Personal opinions without evidence
 - Incomplete understanding (wait for more data)
+
+## Evolve Mode
+
+When `/reflect evolve` is invoked, analyze the system itself and propose improvements.
+
+### Step 1: Gather Failure Data
+
+Read recent history from:
+
+```bash
+ls -la .claude/loop/history/*.json | head -20
+```
+
+Parse each history file for:
+- Loop/plan failures and their reasons
+- Validation failures from `/execute`
+- Cancelled operations and why
+- Error patterns in metrics
+
+### Step 2: Identify Improvement Opportunities
+
+Analyze failures to identify:
+
+1. **Rules that could prevent errors**
+   - Repeated mistakes that a rule would catch
+   - Missing constraints or guidelines
+   - Ambiguous situations that caused confusion
+
+2. **Command templates needing updates**
+   - Commands that frequently fail
+   - Missing options or flags
+   - Outdated process flows
+
+3. **Missing reference docs**
+   - External APIs or tools used without documentation
+   - Patterns that aren't documented
+   - Frameworks lacking skill support
+
+4. **Process improvements**
+   - Steps that should be automated
+   - Validation gaps
+   - Better defaults
+
+### Step 3: Generate Proposals
+
+Create `.claude/evolution-proposals.md`:
+
+```markdown
+# Evolution Proposals
+
+> Generated: {timestamp}
+> Based on: {n} loop histories, {m} failures analyzed
+
+## Summary
+
+- **High Priority**: {count} proposals
+- **Medium Priority**: {count} proposals
+- **Low Priority**: {count} proposals
+
+---
+
+## High Priority
+
+### Proposal 1: Add validation for {pattern}
+
+**Problem**: {description of failure pattern}
+**Evidence**: Occurred in {n} sessions
+- loop_20260105_143022: {brief description}
+- loop_20260107_091544: {brief description}
+
+**Proposed Solution**:
+- Add rule to `rules/claudenv.md`: {rule text}
+- OR: Update command `{name}` to check for {condition}
+- OR: Create reference doc for {topic}
+
+**Impact**: Would have prevented {n} failures
+
+---
+
+### Proposal 2: ...
+
+---
+
+## Medium Priority
+
+...
+
+## Low Priority
+
+...
+
+---
+
+## Implementation Checklist
+
+- [ ] Proposal 1: {title}
+- [ ] Proposal 2: {title}
+...
+```
+
+### Step 4: Present Summary
+
+```
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🧬 System Evolution Analysis
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Analyzed:
+  Loop histories: {n}
+  Failed operations: {m}
+  Time period: {date range}
+
+Proposals Generated:
+  🔴 High Priority: {count}
+  🟡 Medium Priority: {count}
+  🟢 Low Priority: {count}
+
+Top Issues:
+  1. {Most common failure pattern}
+  2. {Second most common}
+  3. {Third most common}
+
+Proposals saved to: .claude/evolution-proposals.md
+
+Review proposals with:
+  cat .claude/evolution-proposals.md
+
+Apply changes manually or request implementation.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+```
+
+### Proposal Categories
+
+| Category | Example | Target File |
+|----------|---------|-------------|
+| Rule | "Always run lint before commit" | `rules/*.md` |
+| Command | "Add --dry-run to /execute" | `commands/*.md` |
+| Reference | "Document Prisma error codes" | `reference/*.md` |
+| Skill | "Create prisma-debug skill" | `skills/` |
+| Hook | "Add pre-commit validation" | `settings.json` |
+| Process | "Run tests after each phase" | Multiple files |
+
+### When to Run Evolve
+
+- After completing a large feature with issues
+- Weekly during active development
+- When patterns of failure emerge
+- Before major refactors
+
+### Auto-Detection
+
+The pattern-observer skill can suggest `/reflect evolve` when:
+- 3+ failures with similar error patterns
+- Same validation fails repeatedly
+- Commands are frequently cancelled

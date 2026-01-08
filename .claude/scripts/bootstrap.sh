@@ -18,7 +18,7 @@ fi
 # Create directories if missing
 echo ""
 echo "📁 Ensuring directory structure..."
-mkdir -p .claude/{logs,backups,learning}
+mkdir -p .claude/{logs,backups,learning,plans,rca,reference}
 
 # Initialize learning files if missing
 echo "📚 Initializing learning files..."

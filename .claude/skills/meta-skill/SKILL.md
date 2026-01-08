@@ -1,7 +1,16 @@
 ---
 name: meta-skill
 description: Creates new skills for unfamiliar technologies. Use when needing to create a skill, add support for unknown frameworks, or extend capabilities for new tech. Researches documentation and delegates to skill-creator for scaffolding.
-allowed-tools: Write, Read, Glob, Grep, WebFetch, WebSearch, Edit, Bash(*)
+context: fork
+allowed-tools:
+  - Write
+  - Read
+  - Glob
+  - Grep
+  - WebFetch
+  - WebSearch
+  - Edit
+  - Bash(*)
 ---
 
 # Meta-Skill

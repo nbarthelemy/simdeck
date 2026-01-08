@@ -1,7 +1,9 @@
 #!/bin/bash
 # Loop Status Script - JSON output for Claude to format
 
-STATE_FILE=".claude/loop/state.json"
+# Always resolve paths relative to repo root
+REPO_ROOT=$(git rev-parse --show-toplevel 2>/dev/null || pwd)
+STATE_FILE="$REPO_ROOT/.claude/loop/state.json"
 
 collect_loop_status() {
     if [ ! -f "$STATE_FILE" ]; then

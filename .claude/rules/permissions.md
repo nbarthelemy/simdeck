@@ -1,5 +1,31 @@
 # Permission Matrix
 
+## Wildcard Bash Permissions (Claude Code 2.1+)
+
+Bash permissions now support wildcards at any position:
+
+```json
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm *)",        // Matches: npm install, npm run build, etc.
+      "Bash(git *)",        // Matches: git status, git commit, etc.
+      "Bash(* --help)",     // Matches: any command with --help flag
+      "Bash(docker compose *)"  // Matches: docker compose up, etc.
+    ]
+  }
+}
+```
+
+**Pattern Examples:**
+- `Bash(npm *)` - npm followed by anything
+- `Bash(* install)` - Any command ending with install
+- `Bash(docker * build)` - docker, anything, then build
+
+**Note:** The old colon syntax (`Bash(npm:*)`) is deprecated. Use space-based wildcards.
+
+---
+
 ## Command Categories
 
 ### Always Allowed (Universal)

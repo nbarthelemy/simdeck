@@ -1,7 +1,15 @@
 ---
 name: project-interview
 description: Conducts project specification interviews to clarify architecture, tech stack, and requirements. Use when starting a new project, planning architecture, gathering requirements, making tech decisions, or when asked to interview, create a spec, help plan, or define what to build. Creates SPEC.md with complete project specification.
-allowed-tools: Read, Write, Edit, WebSearch, WebFetch, Bash(*), Glob, Grep
+allowed-tools:
+  - Read
+  - Write
+  - Edit
+  - WebSearch
+  - WebFetch
+  - Bash(*)
+  - Glob
+  - Grep
 ---
 
 # Interview Agent Skill

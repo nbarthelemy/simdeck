@@ -1,7 +1,20 @@
 ---
 name: autonomous-loop
 description: Manages autonomous iterative development loops that repeat until completion. Use when asked to loop, iterate, keep going until done, work autonomously, run overnight, or continue until a condition is met. Supports checkpointing, cost tracking, and safety limits.
-allowed-tools: Read, Write, Edit, Glob, Grep, Bash(*), WebSearch, WebFetch, TodoWrite, TodoRead
+allowed-tools:
+  - Read
+  - Write
+  - Edit
+  - Glob
+  - Grep
+  - Bash(*)
+  - WebSearch
+  - WebFetch
+  - TodoWrite
+  - TodoRead
+hooks:
+  Stop:
+    - command: bash .claude/scripts/loop-cleanup.sh
 ---
 
 # Loop Agent Skill

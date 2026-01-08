@@ -1,7 +1,16 @@
 ---
 name: agent-creator
 description: Creates new specialist subagents based on detected tech stack or observed patterns. Use proactively during /claudenv to create agents for detected technologies, or when usage patterns suggest a new specialist is needed. Similar to meta-skill but for agents.
-allowed-tools: Read, Write, Edit, Glob, Grep, Bash(*), WebSearch, WebFetch
+context: fork
+allowed-tools:
+  - Read
+  - Write
+  - Edit
+  - Glob
+  - Grep
+  - Bash(*)
+  - WebSearch
+  - WebFetch
 ---
 
 # Agent Creator Skill

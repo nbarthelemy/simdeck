@@ -3,6 +3,9 @@
 # Triggered after file modifications to capture and track patterns
 # Automatically detects when thresholds are reached for skill/agent creation
 
+# Exit gracefully if not in project root
+[ ! -d ".claude" ] && exit 0
+
 LEARNING_DIR=".claude/learning"
 PATTERNS_FILE="$LEARNING_DIR/patterns.json"
 THRESHOLDS_FILE="$LEARNING_DIR/.thresholds_reached"

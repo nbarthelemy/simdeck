@@ -2,6 +2,9 @@
 # Session End Hook
 # Runs when Claude finishes a session
 
+# Exit gracefully if not in project root
+[ ! -d ".claude" ] && exit 0
+
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo "📊 Session Summary"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"

@@ -44,28 +44,38 @@ JSONEOF
         return
     fi
 
-    # Remove deprecated files
+    # Remove deprecated files (count before removal)
     DEPRECATED_COUNT=0
-    while IFS= read -r file; do
+    for file in $(jq -r '.deprecated[]' "$SOURCE_DIR/manifest.json" 2>/dev/null); do
+        [ -z "$file" ] && continue
         if [ -f ".claude/$file" ]; then
             rm -f ".claude/$file"
             DEPRECATED_COUNT=$((DEPRECATED_COUNT + 1))
         fi
-    done < <(jq -r '.deprecated[]' "$SOURCE_DIR/manifest.json" 2>/dev/null)
+    done
 
     # Copy framework files from manifest
     UPDATED_COUNT=0
-    while IFS= read -r file; do
+    for file in $(jq -r '.files[]' "$SOURCE_DIR/manifest.json" 2>/dev/null); do
+        [ -z "$file" ] && continue
         if [ -f "$SOURCE_DIR/$file" ]; then
-            mkdir -p ".claude/$(dirname "$file")"
+            dir=$(dirname "$file")
+            mkdir -p ".claude/$dir"
             cp "$SOURCE_DIR/$file" ".claude/$file"
             UPDATED_COUNT=$((UPDATED_COUNT + 1))
         fi
-    done < <(jq -r '.files[]' "$SOURCE_DIR/manifest.json" 2>/dev/null)
+    done
 
     # Copy version and manifest
     cp "$SOURCE_DIR/version.json" .claude/version.json
     cp "$SOURCE_DIR/manifest.json" .claude/manifest.json
+
+    # Replace relative paths with absolute paths in settings.json hooks
+    PROJECT_DIR="$PWD"
+    if command -v sed &> /dev/null; then
+        sed -i.bak "s|bash .claude/|bash $PROJECT_DIR/.claude/|g" .claude/settings.json
+        rm -f .claude/settings.json.bak
+    fi
 
     # Make scripts executable
     chmod +x .claude/scripts/*.sh 2>/dev/null

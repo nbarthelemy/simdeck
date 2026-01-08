@@ -1,269 +1,249 @@
 ---
-name: loop
-description: Start an autonomous iterative development loop
-arguments:
-  - name: prompt
-    description: The task to iterate on
-    required: true
-  - name: options
-    description: Loop options (--until, --max, --verify, etc.)
-    required: false
+description: "Autonomous loop: /loop <task>, /loop status|pause|resume|cancel|history"
+allowed-tools: Bash, Read, Write, Edit
 ---
 
-# Autonomous Loop
+# /loop - Autonomous Development Loop
 
-Start an iterative development loop that continues until completion conditions are met.
+## Usage
 
-## Parse Arguments
+```
+/loop "<task>" [options]    Start loop
+/loop status                Show progress
+/loop pause                 Pause loop
+/loop resume                Resume loop
+/loop cancel                Stop loop
+/loop history [id]          View past loops
+```
 
-Extract from input:
-- **Prompt**: The main task description (quoted string after /loop)
-- **Options**: Any flags provided
+## Options
 
-### Available Options
+| Flag | Description |
+|------|-------------|
+| `--until "<text>"` | Exit when output contains phrase |
+| `--until-exit <N>` | Exit when verify returns code |
+| `--verify "<cmd>"` | Run after each iteration |
+| `--max <N>` | Max iterations (default: 20) |
+| `--max-time <dur>` | Max time (default: 2h) |
+| `--track "<name>"` | Track name for coordination |
+| `--agent-id "<id>"` | Agent ID (auto-generated if not provided) |
+| `--plan "<file>"` | Execute structured plan file (phases/tasks) |
+| `--validate-after-phase` | Run /validate after each phase (with --plan) |
 
-| Option | Description | Example |
-|--------|-------------|---------|
-| `--until "<text>"` | Exit when output contains exact phrase | `--until "All tests passing"` |
-| `--until-exit <code>` | Exit when verify command returns code | `--until-exit 0` |
-| `--until-regex "<pattern>"` | Exit when output matches regex | `--until-regex "0 errors"` |
-| `--verify "<cmd>"` | Command to run after each iteration | `--verify "npm test"` |
-| `--max <n>` | Maximum iterations (default: 20) | `--max 50` |
-| `--max-time <duration>` | Maximum time (default: 2h) | `--max-time 8h` |
-| `--max-cost <amount>` | Maximum estimated cost | `--max-cost $10` |
-| `--mode <mode>` | Loop mode: standard, tdd, refine | `--mode tdd` |
-| `--checkpoint <n>` | Checkpoint every N iterations | `--checkpoint 5` |
+## Actions
 
-## Pre-Loop Checks
+### Start Loop
+1. Parse task and options from args
+2. Require completion condition (--until or --until-exit)
+3. **Coordination setup** (if --track provided):
+   - Generate agent ID: `agent-{hostname}-{timestamp}`
+   - Register: `bash .claude/scripts/todo-coordinator.sh register "$AGENT_ID" "$TRACK"`
+   - Check for active agents on same track (warn if conflict)
+4. Create `.claude/loop/state.json` with status "running"
+5. Begin iteration cycle:
+   - **If coordinated**: Check available tasks, claim next unclaimed
+   - Execute task
+   - Verify completion
+   - **If coordinated**: Mark task complete, claim next
+   - Check exit condition → repeat or exit
+6. **On completion**:
+   - Deregister: `bash .claude/scripts/todo-coordinator.sh deregister "$AGENT_ID"`
+   - Display summary and archive to history
 
-1. **Validate Arguments**
-   ```
-   - Prompt must be provided
-   - At least one completion condition required (--until, --until-exit, or --until-regex)
-   - Safety limit must be set (--max or --max-time, defaults applied if missing)
-   ```
+### Status
+Run: `bash .claude/scripts/loop-status.sh`
+Show: iteration progress, elapsed time, completion condition
 
-2. **Check for Existing Loop**
-   ```bash
-   if [ -f ".claude/loop/state.json" ]; then
-     # Check if loop is running or paused
-     status=$(jq -r '.status' .claude/loop/state.json)
-     if [ "$status" = "running" ] || [ "$status" = "paused" ]; then
-       echo "⚠️ Loop already active. Use /loop:status, /loop:resume, or /loop:cancel"
-       exit 1
-     fi
-   fi
-   ```
+### Pause
+Update state.json: `"status": "paused"`
+Save checkpoint for resumption
 
-3. **Initialize Loop State**
-   ```bash
-   mkdir -p .claude/loop/checkpoints .claude/loop/logs
-   ```
+### Resume
+Verify state is "paused", update to "running"
+Continue from last checkpoint
 
-## Create State File
+### Cancel
+Archive state to `.claude/loop/history/{id}.json`
+Clean up active loop files
 
-Write to `.claude/loop/state.json`:
+### History
+List all loops in `.claude/loop/history/`
+With ID: show detailed loop info
 
+## State File
+
+`.claude/loop/state.json`:
+```json
+{"id":"loop_YYYYMMDD_HHMMSS","status":"running","prompt":"...","iterations":{"current":0,"max":20},"completion":{"type":"exact","condition":"...","met":false}}
+```
+
+## Example
+
+```
+/loop "Fix all TypeScript errors" --until "Found 0 errors" --max 10
+/loop status
+/loop pause
+/loop resume
+```
+
+## Multi-Agent Coordination
+
+When using `--track`, loops coordinate with other agents via shared state.
+
+### Coordinated Example
+
+```bash
+# Terminal 1
+/loop "Complete frontend tasks" --track "Track A" --until "TRACK_A_COMPLETE" --max 15
+
+# Terminal 2
+/loop "Complete API tasks" --track "Track B" --until "TRACK_B_COMPLETE" --max 15
+```
+
+### Coordination Protocol
+
+1. **Register** on start - announce presence to other agents
+2. **Claim** tasks before working - prevents conflicts
+3. **Complete** tasks when done - updates shared TODO.md
+4. **Heartbeat** periodically - allows stale agent detection
+5. **Deregister** on exit - releases unclaimed tasks
+
+### Check Coordination Status
+
+```bash
+bash .claude/scripts/todo-coordinator.sh status
+```
+
+Output:
 ```json
 {
-  "id": "loop_YYYYMMDD_HHMMSS",
+  "activeAgents": 2,
+  "tasksInProgress": 3,
+  "tasksCompleted": 5,
+  "agents": {...},
+  "tasks": {...}
+}
+```
+
+### Shared State
+
+All coordination data is stored in `.claude/loop/coordination.json` and can be safely read by any terminal to understand the current state.
+
+---
+
+## Plan Mode
+
+When `--plan <file>` is provided, loop operates in structured plan mode, iterating through phases and tasks defined in the plan file.
+
+### Usage
+
+```bash
+/loop --plan .claude/plans/feature.md --until "PLAN_COMPLETE" --max 50
+/loop --plan .claude/plans/feature.md --validate-after-phase
+```
+
+### Plan File Structure
+
+Plans must follow this structure (created by `/feature`):
+
+```markdown
+# Feature: {Name}
+
+> Status: ready | in_progress | completed
+
+## Implementation Phases
+
+### Phase 1: {Name}
+
+#### Tasks
+
+- [ ] **Task 1.1**: {Description}
+  - File: `path/to/file.ts`
+  - Details: {Implementation specifics}
+
+- [ ] **Task 1.2**: {Description}
+  - Depends: Task 1.1
+
+### Phase 2: {Name}
+...
+
+## Validation Commands
+```bash
+npm run typecheck
+npm test
+```
+```
+
+### Plan Execution Process
+
+1. **Initialize Plan State**
+   ```bash
+   bash .claude/scripts/loop-manager.sh init_plan "{plan_file}"
+   ```
+   Creates `.claude/loop/plan-state.json`
+
+2. **For Each Phase:**
+   - For each task in phase:
+     1. Check dependencies (Depends: field)
+     2. Read task details (File, Details, References)
+     3. Execute task implementation
+     4. Update plan file: `- [ ]` → `- [x]`
+     5. Output: `TASK_COMPLETE: {task_id}`
+   - After all tasks: Output `PHASE_COMPLETE: {phase_name}`
+   - If `--validate-after-phase`: Run `/validate --quick`
+
+3. **On Plan Completion**
+   - Update plan status to `completed`
+   - Output: `PLAN_COMPLETE`
+
+### Plan State File
+
+`.claude/loop/plan-state.json`:
+```json
+{
+  "planFile": ".claude/plans/feature.md",
   "status": "running",
-  "prompt": "<user prompt>",
-  "mode": "<standard|tdd|refine>",
-  "started_at": "<ISO timestamp>",
-  "iterations": {
-    "current": 0,
-    "max": <max value or 20>
-  },
-  "completion": {
-    "type": "<exact|exit|regex>",
-    "condition": "<condition value>",
-    "verify_command": "<verify command if set>",
-    "met": false
-  },
-  "limits": {
-    "max_time": "<duration or 2h>",
-    "max_cost": "<cost or null>",
-    "checkpoint_interval": <interval or 5>
-  },
-  "checkpoints": [],
-  "metrics": {
-    "estimated_tokens": 0,
-    "estimated_cost": "$0.00",
-    "elapsed_time": "0s"
+  "currentPhase": 1,
+  "currentTask": "1.2",
+  "phases": [
+    {"name": "Phase 1", "status": "in_progress", "tasks": ["1.1", "1.2"]}
+  ],
+  "tasksCompleted": ["1.1"],
+  "phasesCompleted": [],
+  "validationResults": {
+    "Phase 1": {"passed": true, "output": "..."}
   }
 }
 ```
 
-## Start Loop
+### Plan Mode Markers
 
-Display startup message:
+- `PLAN_STARTED` - Plan execution began
+- `TASK_COMPLETE: {task_id}` - Individual task done
+- `PHASE_COMPLETE: {phase_name}` - All tasks in phase done
+- `PHASE_VALIDATION_PASSED` / `PHASE_VALIDATION_FAILED` - After phase validation
+- `PLAN_COMPLETE` - All phases done
+- `PLAN_BLOCKED: {reason}` - Cannot proceed
 
-```
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-🔄 AUTONOMOUS LOOP STARTED
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-📋 Task: <prompt>
-🎯 Complete when: <completion condition>
-🛡️ Safety limits: max <N> iterations, <time> max time
-📊 Mode: <mode>
-
-Starting iteration 1...
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-```
-
-## Iteration Execution
-
-For each iteration:
-
-### 1. Update State
-```json
-{
-  "iterations": { "current": N }
-}
-```
-
-### 2. Build Iteration Prompt
-
-```markdown
-## Loop Context
-
-**Iteration**: {current}/{max}
-**Elapsed**: {elapsed_time}
-**Mode**: {mode}
-
-## Original Task
-
-{user_prompt}
-
-## Previous Iteration Summary
-
-{summary from last iteration, or "First iteration" if iteration 1}
-
-## Completion Target
-
-When this task is complete, include this exact phrase in your response:
-{completion_phrase}
-
-Or if using verification, ensure the verification command succeeds.
-
-## Instructions
-
-Continue working toward the completion target. Focus on incremental progress.
-Use all available tools. If you encounter blockers, document them clearly.
-
-If the task is complete, output the completion phrase.
-If you need more iterations, summarize progress and continue.
-```
-
-### 3. Execute Task
-- Run the prompt with full Claude capabilities
-- Capture output for condition checking
-
-### 4. Run Verification (if --verify set)
-```bash
-{verify_command}
-EXIT_CODE=$?
-```
-
-### 5. Check Completion Conditions
-
-```python
-# Exact match
-if "--until" in options:
-    if completion_phrase in output:
-        complete = True
-
-# Exit code
-if "--until-exit" in options:
-    if exit_code == expected_code:
-        complete = True
-
-# Regex
-if "--until-regex" in options:
-    if regex.match(pattern, output):
-        complete = True
-```
-
-### 6. Check Safety Limits
-
-```python
-if current_iteration >= max_iterations:
-    status = "max_iterations_reached"
-    stop = True
-
-if elapsed_time >= max_time:
-    status = "time_limit_reached"
-    stop = True
-
-if estimated_cost >= max_cost:
-    status = "cost_limit_reached"
-    stop = True
-```
-
-### 7. Checkpoint (if interval reached)
-
-Save to `.claude/loop/checkpoints/checkpoint_{iteration}.json`:
-```json
-{
-  "iteration": N,
-  "timestamp": "<ISO>",
-  "summary": "<iteration summary>",
-  "files_modified": ["file1.ts", "file2.ts"],
-  "errors": []
-}
-```
-
-### 8. Continue or Complete
-
-If complete:
-```
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-✅ LOOP COMPLETE
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-📊 Summary:
-   Iterations: {total}
-   Time: {elapsed}
-   Est. Cost: {cost}
-
-📁 Files Modified:
-   {list of files}
-
-🎯 Completion: {condition met}
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-```
-
-If continuing:
-```
-───────────────────────────────────────────────────────────
-📍 Iteration {N} complete
-   Progress: {brief summary}
-   Continuing to iteration {N+1}...
-───────────────────────────────────────────────────────────
-```
-
-## Error Handling
-
-If error occurs 3 times consecutively:
-1. Pause loop
-2. Save state
-3. Notify user
-4. Suggest `/loop:resume` after fixing issue
-
-## Examples
+### Example
 
 ```bash
-# Basic loop
-/loop "Fix all TypeScript errors" --until "Found 0 errors" --max 10
+# Create a plan
+/feature "Add user authentication"
 
-# TDD loop
-/loop "Implement user login" --mode tdd --verify "npm test" --until-exit 0
+# Execute the plan
+/loop --plan .claude/plans/add-user-authentication.md --until "PLAN_COMPLETE" --max 30
 
-# Overnight run
-/loop "Build complete API" --until "API_COMPLETE" --max 50 --max-time 8h
+# With phase validation
+/loop --plan .claude/plans/add-user-authentication.md --validate-after-phase --until "PLAN_COMPLETE"
+```
 
-# Refinement
-/loop "Improve test coverage" --verify "npm run coverage" --until-regex "[89][0-9]%" --max 15
+### Integration with /execute
+
+The `/execute` command is a thin wrapper that calls `/loop --plan`:
+
+```
+/execute .claude/plans/feature.md
+  └── /loop --plan .claude/plans/feature.md --until "PLAN_COMPLETE"
+      └── /validate (after loop completes)
 ```

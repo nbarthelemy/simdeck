@@ -2,6 +2,9 @@
 # Session Start Hook
 # Runs when a new Claude session begins
 
+# Exit gracefully if not in project root
+[ ! -d ".claude" ] && exit 0
+
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo "🚀 Session Started"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
@@ -75,6 +78,19 @@ COMMANDS=$(find .claude/commands -name "*.md" 2>/dev/null | wc -l | tr -d ' ')
 
 echo "🤖 Skills: $SKILLS | 📝 Commands: $COMMANDS"
 
+# Check for plans and RCAs
+PLANS=$(find .claude/plans -name "*.md" 2>/dev/null | wc -l | tr -d ' ')
+RCAS=$(find .claude/rca -name "*.md" 2>/dev/null | wc -l | tr -d ' ')
+if [ "$PLANS" -gt 0 ] || [ "$RCAS" -gt 0 ]; then
+    echo "📋 Plans: $PLANS | 🔍 RCAs: $RCAS"
+fi
+
+# Check for reference docs
+REFS=$(find .claude/reference -name "*.md" 2>/dev/null | wc -l | tr -d ' ')
+if [ "$REFS" -gt 0 ]; then
+    echo "📚 Reference docs: $REFS"
+fi
+
 # Check for pending learnings
 PENDING_SKILLS=$(grep -c "^### " .claude/learning/pending-skills.md 2>/dev/null | tr -d ' \n' || echo "0")
 
@@ -87,6 +103,10 @@ if [ -f ".claude/.autonomy-paused" ]; then
     echo ""
     echo "⏸️  Autonomy is PAUSED - run /autonomy:resume to restore"
 fi
+
+# Suggest /prime if not recently run
+echo ""
+echo "💡 Tip: /prime to load full project context"
 
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 

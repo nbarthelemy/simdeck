@@ -1,0 +1,229 @@
+{
+  "$schema": "./triggers.schema.json",
+  "version": "1.0",
+  "description": "Skill trigger configuration. Keywords and phrases that auto-invoke skills.",
+
+  "skills": {
+    "frontend-design": {
+      "keywords": [
+        "UI", "UX", "CSS", "SCSS", "styling", "Tailwind",
+        "layout", "animation", "typography", "colors", "themes",
+        "dark mode", "light mode", "responsive", "mobile-first"
+      ],
+      "phrases": [
+        "make it look better",
+        "improve the look",
+        "improve the design",
+        "polish the UI",
+        "fix styling",
+        "redesign components",
+        "beautify",
+        "make it pretty",
+        "update the styles",
+        "modernize the UI",
+        "make it responsive",
+        "add dark mode",
+        "needs visual polish",
+        "looks ugly",
+        "looks bad"
+      ],
+      "contexts": [
+        "buttons", "cards", "forms", "modals", "navbars",
+        "hero sections", "landing pages", "dashboards",
+        "components", "sidebar", "header", "footer"
+      ]
+    },
+
+    "autonomous-loop": {
+      "keywords": [
+        "loop", "iterate", "autonomous", "autopilot"
+      ],
+      "phrases": [
+        "keep going until done",
+        "work autonomously",
+        "run overnight",
+        "continue until",
+        "don't stop until",
+        "keep iterating",
+        "run in a loop",
+        "iterate until complete",
+        "work until finished",
+        "autonomous mode"
+      ]
+    },
+
+    "lsp-setup": {
+      "keywords": [
+        "LSP", "language server", "intellisense", "code intelligence"
+      ],
+      "phrases": [
+        "go-to-definition",
+        "find references",
+        "hover docs",
+        "code navigation",
+        "jump to definition",
+        "find usages",
+        "symbol search",
+        "setup language server",
+        "install LSP"
+      ]
+    },
+
+    "project-interview": {
+      "keywords": [
+        "interview", "specification", "spec", "requirements"
+      ],
+      "phrases": [
+        "create a spec",
+        "help plan",
+        "define what to build",
+        "starting a new project",
+        "new project setup",
+        "gather requirements",
+        "planning architecture",
+        "making tech decisions",
+        "what should we build",
+        "help me plan this",
+        "project requirements",
+        "write a spec"
+      ]
+    },
+
+    "skill-creator": {
+      "keywords": [],
+      "phrases": [
+        "create a skill",
+        "creating a skill",
+        "new skill",
+        "scaffold skill",
+        "scaffolding skill",
+        "initialize skill",
+        "build a skill",
+        "make a skill"
+      ]
+    },
+
+    "meta-skill": {
+      "keywords": [],
+      "phrases": [
+        "unknown framework",
+        "unfamiliar technology",
+        "never used before",
+        "don't know this tech",
+        "extend capabilities",
+        "add support for",
+        "learn about this framework"
+      ],
+      "note": "Triggers when encountering tech without existing skill support"
+    },
+
+    "tech-detection": {
+      "keywords": [
+        "stack", "technologies", "frameworks"
+      ],
+      "phrases": [
+        "analyze project",
+        "detect stack",
+        "what tech is used",
+        "detecting technologies",
+        "bootstrapping infrastructure",
+        "setting up permissions",
+        "what frameworks",
+        "identify stack"
+      ]
+    },
+
+    "pattern-observer": {
+      "keywords": [
+        "patterns", "learnings", "automations"
+      ],
+      "phrases": [
+        "review learnings",
+        "analyze patterns",
+        "create automations",
+        "workflow optimization",
+        "pending suggestions",
+        "what did you learn",
+        "what have we learned",
+        "repeated tasks",
+        "automate this pattern"
+      ]
+    },
+
+    "orchestrator": {
+      "keywords": [
+        "comprehensive", "thorough", "complete"
+      ],
+      "phrases": [
+        "full review",
+        "review everything",
+        "across the codebase",
+        "refactor all",
+        "entire project",
+        "all files",
+        "comprehensive analysis",
+        "parallel execution",
+        "spawn agents",
+        "multi-domain task"
+      ],
+      "complexity_triggers": {
+        "file_count": 5,
+        "domain_count": 2,
+        "step_count": 4
+      }
+    },
+
+    "agent-creator": {
+      "keywords": [],
+      "phrases": [
+        "create an agent",
+        "new specialist agent",
+        "specialist for this tech",
+        "need an expert for"
+      ],
+      "auto_trigger": "During /claudenv when new technologies detected"
+    },
+
+    "spec-workflow": {
+      "keywords": [
+        "spec", "specification", "setup", "bootstrap"
+      ],
+      "phrases": [
+        "set up project",
+        "bootstrap project",
+        "create specification",
+        "project specification",
+        "initialize project",
+        "new project from scratch",
+        "start fresh project",
+        "create project spec"
+      ],
+      "note": "Triggers /spec command for full project setup"
+    },
+
+    "autopilot-workflow": {
+      "keywords": [
+        "autopilot", "autonomous", "unattended"
+      ],
+      "phrases": [
+        "complete all features",
+        "work through todo",
+        "finish everything",
+        "run autonomously",
+        "hands-off mode",
+        "complete without me",
+        "work overnight",
+        "autonomous completion",
+        "finish the todo list",
+        "process all features"
+      ],
+      "note": "Triggers /autopilot for fully autonomous feature completion"
+    }
+  },
+
+  "global": {
+    "case_sensitive": false,
+    "match_mode": "any",
+    "min_confidence": 0.7
+  }
+}

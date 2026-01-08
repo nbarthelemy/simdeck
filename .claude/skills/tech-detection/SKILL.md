@@ -1,7 +1,16 @@
 ---
 name: tech-detection
 description: Detects project tech stack including languages, frameworks, package managers, and cloud platforms. Use when analyzing a project, detecting technologies, bootstrapping infrastructure, or setting up permissions. Generates project-context.json with detected stack.
-allowed-tools: Bash(*), Read, Glob, Grep, Write, Edit, WebSearch, WebFetch
+context: fork
+allowed-tools:
+  - Bash(*)
+  - Read
+  - Glob
+  - Grep
+  - Write
+  - Edit
+  - WebSearch
+  - WebFetch
 ---
 
 # Tech Detection Skill

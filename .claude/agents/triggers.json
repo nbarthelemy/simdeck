@@ -1,0 +1,228 @@
+{
+  "$schema": "./triggers.schema.json",
+  "version": "1.0",
+  "description": "Agent trigger configuration. Keywords and phrases that route tasks to specialist agents.",
+
+  "agents": {
+    "frontend-developer": {
+      "keywords": [
+        "UI", "component", "CSS", "SCSS", "styling", "layout",
+        "responsive", "animation", "frontend", "React", "Vue",
+        "Svelte", "Next.js", "Tailwind", "HTML"
+      ],
+      "phrases": [
+        "build the frontend",
+        "create a component",
+        "fix the layout",
+        "make it responsive",
+        "style this page",
+        "update the UI",
+        "frontend implementation",
+        "build this screen"
+      ],
+      "file_patterns": ["*.tsx", "*.jsx", "*.vue", "*.svelte", "*.css", "*.scss"]
+    },
+
+    "backend-architect": {
+      "keywords": [
+        "API", "database", "service", "endpoint", "server",
+        "backend", "microservice", "REST", "GraphQL", "middleware"
+      ],
+      "phrases": [
+        "build the backend",
+        "create an API",
+        "design the database",
+        "implement the service",
+        "backend architecture",
+        "server-side logic",
+        "data model design"
+      ],
+      "file_patterns": ["*.py", "*.go", "*.rs", "*.java", "*.rb", "*.ts"]
+    },
+
+    "code-reviewer": {
+      "keywords": [
+        "review", "quality", "refactor", "patterns", "best practices",
+        "code smell", "clean code", "DRY", "SOLID"
+      ],
+      "phrases": [
+        "review this code",
+        "check for issues",
+        "improve code quality",
+        "refactor this",
+        "code review",
+        "find problems",
+        "any issues here",
+        "is this good code"
+      ]
+    },
+
+    "security-auditor": {
+      "keywords": [
+        "security", "vulnerability", "auth", "authentication",
+        "authorization", "encryption", "XSS", "injection", "OWASP",
+        "CVE", "secrets", "credentials"
+      ],
+      "phrases": [
+        "security audit",
+        "check for vulnerabilities",
+        "is this secure",
+        "security review",
+        "find security issues",
+        "penetration test",
+        "security scan",
+        "check authentication"
+      ]
+    },
+
+    "test-engineer": {
+      "keywords": [
+        "test", "testing", "coverage", "TDD", "Jest", "pytest",
+        "Playwright", "Cypress", "unit test", "integration test",
+        "e2e", "mock", "fixture"
+      ],
+      "phrases": [
+        "write tests",
+        "add test coverage",
+        "create unit tests",
+        "test this function",
+        "add integration tests",
+        "e2e tests",
+        "testing strategy",
+        "increase coverage"
+      ],
+      "file_patterns": ["*.test.*", "*.spec.*", "*_test.*", "test_*.*"]
+    },
+
+    "devops-engineer": {
+      "keywords": [
+        "deploy", "CI", "CD", "Docker", "Kubernetes", "K8s",
+        "infrastructure", "pipeline", "GitHub Actions", "Terraform",
+        "AWS", "GCP", "Azure", "container"
+      ],
+      "phrases": [
+        "set up CI/CD",
+        "deploy this",
+        "create a pipeline",
+        "containerize",
+        "infrastructure setup",
+        "configure deployment",
+        "set up Docker",
+        "create Dockerfile"
+      ],
+      "file_patterns": ["Dockerfile", "docker-compose.*", "*.yaml", ".github/workflows/*"]
+    },
+
+    "api-designer": {
+      "keywords": [
+        "API", "endpoint", "schema", "OpenAPI", "GraphQL", "REST",
+        "swagger", "routes", "request", "response"
+      ],
+      "phrases": [
+        "design the API",
+        "create endpoints",
+        "API schema",
+        "define routes",
+        "REST API design",
+        "GraphQL schema",
+        "API documentation",
+        "endpoint structure"
+      ],
+      "file_patterns": ["*.yaml", "*.json", "openapi.*", "swagger.*", "*.graphql"]
+    },
+
+    "performance-analyst": {
+      "keywords": [
+        "performance", "optimize", "slow", "benchmark", "profiling",
+        "memory", "CPU", "latency", "throughput", "caching", "fast"
+      ],
+      "phrases": [
+        "optimize performance",
+        "make it faster",
+        "why is it slow",
+        "performance issues",
+        "speed this up",
+        "reduce latency",
+        "improve throughput",
+        "memory leak"
+      ]
+    },
+
+    "accessibility-checker": {
+      "keywords": [
+        "accessibility", "a11y", "WCAG", "ARIA", "screen reader",
+        "keyboard navigation", "contrast", "alt text"
+      ],
+      "phrases": [
+        "accessibility audit",
+        "check accessibility",
+        "WCAG compliance",
+        "screen reader support",
+        "keyboard accessible",
+        "add ARIA labels",
+        "accessibility review",
+        "a11y check"
+      ],
+      "file_patterns": ["*.tsx", "*.jsx", "*.vue", "*.html", "*.svelte"]
+    },
+
+    "documentation-writer": {
+      "keywords": [
+        "docs", "documentation", "README", "guide", "tutorial",
+        "API docs", "JSDoc", "comments", "changelog"
+      ],
+      "phrases": [
+        "write documentation",
+        "update the README",
+        "document this",
+        "add comments",
+        "create a guide",
+        "API documentation",
+        "write a tutorial",
+        "generate docs"
+      ],
+      "file_patterns": ["*.md", "*.mdx", "*.rst", "README*", "CHANGELOG*"]
+    },
+
+    "release-manager": {
+      "keywords": [
+        "release", "version", "changelog", "deploy", "publish",
+        "tag", "semver", "bump"
+      ],
+      "phrases": [
+        "prepare release",
+        "version bump",
+        "update changelog",
+        "create release",
+        "publish package",
+        "tag version",
+        "release notes",
+        "ship it"
+      ],
+      "file_patterns": ["package.json", "CHANGELOG*", "version.*"]
+    },
+
+    "migration-specialist": {
+      "keywords": [
+        "migrate", "upgrade", "refactor", "modernize", "legacy",
+        "transition", "deprecate", "breaking change"
+      ],
+      "phrases": [
+        "migrate to",
+        "upgrade from",
+        "modernize this",
+        "refactor legacy",
+        "handle breaking changes",
+        "version upgrade",
+        "migration plan",
+        "deprecation strategy"
+      ]
+    }
+  },
+
+  "global": {
+    "case_sensitive": false,
+    "match_mode": "any",
+    "min_confidence": 0.7
+  }
+}
