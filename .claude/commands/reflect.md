@@ -312,7 +312,7 @@ Create `.claude/evolution-proposals.md`:
 ```markdown
 # Evolution Proposals
 
-> Generated: {timestamp}
+> Generated: {YYYY-MM-DD HH:MM}
 > Based on: {n} loop histories, {m} failures analyzed
 
 ## Summary

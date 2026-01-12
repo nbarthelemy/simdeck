@@ -114,7 +114,7 @@ For each extracted feature:
 
 > Status: draft
 > Priority: {P0|P1|P2}
-> Created: {timestamp}
+> Created: {YYYY-MM-DD HH:MM}
 
 ## Overview
 
@@ -140,7 +140,7 @@ Create/update `.claude/TODO.md`:
 ```markdown
 # Development TODO
 
-> Generated from SPEC.md on {timestamp}
+> Generated from SPEC.md on {YYYY-MM-DD HH:MM}
 > Run `/next` to work through features interactively
 > Run `/autopilot` for autonomous completion
 

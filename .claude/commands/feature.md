@@ -82,7 +82,7 @@ Create the plan document at `.claude/plans/{kebab-case-name}.md`:
 ```markdown
 # Feature: {Feature Name}
 
-> Created: {timestamp}
+> Created: {YYYY-MM-DD HH:MM}
 > Status: draft | ready | in_progress | completed
 > Estimated Tasks: {n}
 

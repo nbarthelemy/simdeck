@@ -104,7 +104,7 @@ Create RCA document at `.claude/rca/{issue-id-or-slug}.md`:
 ```markdown
 # RCA: {Issue Title}
 
-> Created: {timestamp}
+> Created: {YYYY-MM-DD HH:MM}
 > Issue: #{id} or {description}
 > Severity: Critical | High | Medium | Low
 > Status: investigating | root_cause_found | fix_planned | resolved

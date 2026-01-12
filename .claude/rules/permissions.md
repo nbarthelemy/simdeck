@@ -138,8 +138,8 @@ Override permissions in `.claude/settings.local.json`:
 ```json
 {
   "permissions": {
-    "allow": ["Bash(custom-command:*)"],
-    "deny": ["Bash(npm publish:*)"]
+    "allow": ["Bash(custom-command *)"],
+    "deny": ["Bash(npm publish *)"]
   }
 }
 ```

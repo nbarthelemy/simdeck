@@ -122,7 +122,7 @@ Output `PLAN_CREATED` marker if new plan was made.
 Update TODO.md to show feature is being worked on:
 
 ```markdown
-- [~] {Feature name} (started {date})
+- [~] {Feature name} (started {YYYY-MM-DD HH:MM})
 ```
 
 ### Step 7: Confirm Execution

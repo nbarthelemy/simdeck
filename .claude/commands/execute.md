@@ -72,7 +72,7 @@ If validation passes, find and mark the related TODO item complete:
 3. Update: `- [ ]` → `- [x]` with completion date
 
 ```markdown
-- [x] {Feature name} (completed {date})
+- [x] {Feature name} (completed {YYYY-MM-DD HH:MM})
 ```
 
 ### Step 6: Soft Context Suggestion

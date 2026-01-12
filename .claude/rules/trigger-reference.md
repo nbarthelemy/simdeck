@@ -48,6 +48,14 @@ When the user's request contains these keywords or phrases, invoke the correspon
 **Keywords:** none
 **Phrases:** "create an agent", "new specialist agent", "specialist for this tech", "need an expert for"
 
+### spec-workflow
+**Keywords:** spec, specification, setup, bootstrap
+**Phrases:** "set up project", "bootstrap project", "create specification", "project specification", "initialize project", "new project from scratch", "start fresh project", "create project spec"
+
+### autopilot-workflow
+**Keywords:** autopilot, autonomous, unattended
+**Phrases:** "complete all features", "work through todo", "finish everything", "run autonomously", "hands-off mode", "complete without me", "work overnight", "autonomous completion", "finish the todo list", "process all features"
+
 
 ## Agent Triggers
 

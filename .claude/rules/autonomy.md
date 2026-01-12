@@ -33,8 +33,8 @@ Maximum user control:
 
 ## Switching Autonomy
 
-Use `/autonomy:pause` to temporarily reduce autonomy level.
-Use `/autonomy:resume` to restore previous level.
+Use `/autonomy pause` to temporarily reduce autonomy level.
+Use `/autonomy resume` to restore previous level.
 
 ## Error Recovery Protocol
 

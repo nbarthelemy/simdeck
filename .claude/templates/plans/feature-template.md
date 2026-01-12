@@ -1,6 +1,6 @@
 # Feature: {Feature Name}
 
-> Created: {timestamp}
+> Created: {YYYY-MM-DD HH:MM}
 > Status: draft | ready | in_progress | completed
 > Estimated Tasks: {n}
 

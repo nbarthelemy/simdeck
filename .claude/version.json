@@ -1,11 +1,14 @@
 {
-  "infrastructureVersion": "2.6.0",
+  "infrastructureVersion": "2.6.3",
   "schemaVersion": "1.0.0",
   "createdAt": "2026-01-03T00:00:00Z",
-  "lastUpdated": "2026-01-08T00:00:00Z",
+  "lastUpdated": "2026-01-10T12:00:00Z",
   "migratedFrom": null,
   "generatedBy": "claudenv-init",
   "changelog": {
+    "2.6.3": "Fix /docs command to only update framework files when run from claudenv repo, fix deprecated colon syntax in docs",
+    "2.6.2": "Add /docs command for documentation updates, /shipit command for releases",
+    "2.6.1": "Add /backlog command to send current or specified task to backlog. Standardize timestamps to YYYY-MM-DD HH:MM format across all generated files",
     "2.6.0": "PIV workflow refactor: Add /spec (project setup orchestrator), /autopilot (fully autonomous feature completion). Enhance /loop with --plan flag for structured plan execution. Refactor /execute as thin orchestrator calling /loop + /validate. Rewrite /next for interactive feature workflow. Add /reflect evolve for system evolution analysis",
     "2.5.0": "Add PIV workflow: /prime, /feature, /execute, /validate, /rca commands. Add .claude/reference/ for curated docs, .claude/plans/ and .claude/rca/ for artifacts",
     "2.4.5": "Version bump to propagate TODO.md template and loop-cleanup.sh",

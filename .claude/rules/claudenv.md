@@ -16,6 +16,7 @@
 | `/execute <plan>` | Execute plan via `/loop --plan` + `/validate` |
 | `/validate` | Run stack-aware validation (lint, type-check, test, build) |
 | `/rca <issue>` | Root cause analysis for bugs |
+| `/backlog` | Send current or specified task to the backlog |
 | `/claudenv` | Bootstrap infrastructure for current project |
 | `/interview` | Conduct project specification interview |
 | `/loop` | Start autonomous iterative development loop |
@@ -25,15 +26,15 @@
 | `/loop resume` | Resume paused loop |
 | `/loop cancel` | Stop and cancel active loop |
 | `/lsp` | Auto-detect and install LSP servers |
-| `/lsp:status` | Check LSP server status |
-| `/claudenv:status` | Show system overview |
-| `/health:check` | Verify infrastructure integrity |
-| `/learn:review` | Review pending automation proposals |
+| `/lsp status` | Check LSP server status |
+| `/claudenv status` | Show system overview |
+| `/health check` | Verify infrastructure integrity |
+| `/learn review` | Review pending automation proposals |
 | `/reflect` | Consolidate learnings, update project knowledge |
 | `/reflect evolve` | Analyze failures and propose system improvements |
 | `/analyze-patterns` | Force pattern analysis |
-| `/skills:triggers` | List skill trigger keywords and phrases |
-| `/agents:triggers` | List agent trigger keywords and phrases |
+| `/triggers skills` | List skill trigger keywords and phrases |
+| `/triggers agents` | List agent trigger keywords and phrases |
 
 ### Skills (Auto-Invoked)
 
@@ -65,6 +66,14 @@ Skills auto-invoke based on triggers in `.claude/skills/triggers.json`. See `@ru
 ├── logs/               # Execution logs
 └── backups/            # Auto-backups
 ```
+
+### Conventions
+
+**Timestamps**: All generated files use `YYYY-MM-DD HH:MM` format (24-hour, local time).
+- Example: `2026-01-09 14:30`
+- Applies to: SPEC.md, TODO.md, plans, RCA documents, logs
+
+**File naming**: kebab-case for generated files (e.g., `add-user-authentication.md`)
 
 ---
 
@@ -419,11 +428,11 @@ For persistent, iterative development use `/loop`:
 
 **Loop Commands:**
 - `/loop "<task>" [options]` - Start loop
-- `/loop:status` - Check progress
-- `/loop:pause` - Pause loop
-- `/loop:resume` - Resume loop
-- `/loop:cancel` - Stop loop
-- `/loop:history` - View past loops
+- `/loop status` - Check progress
+- `/loop pause` - Pause loop
+- `/loop resume` - Resume loop
+- `/loop cancel` - Stop loop
+- `/loop history` - View past loops
 
 **Completion Options:**
 - `--until "<text>"` - Exit when output contains exact phrase
@@ -453,7 +462,7 @@ Language servers are **automatically installed** during `/claudenv` and when new
 
 **Commands:**
 - `/lsp` - Manually trigger LSP detection and installation
-- `/lsp:status` - Check which servers are installed
+- `/lsp status` - Check which servers are installed
 
 LSP is preferred over grep/search for code navigation - it understands code semantically.
 

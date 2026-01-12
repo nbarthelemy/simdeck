@@ -1,6 +1,6 @@
 {
   "description": "Framework files managed by claudenv. Used during updates to remove deleted files without affecting user-created content.",
-  "version": "2.6.0",
+  "version": "2.6.3",
   "files": [
     "agents/accessibility-checker.md",
     "agents/api-designer.md",
@@ -17,10 +17,12 @@
     "agents/triggers.json",
     "commands/analyze-patterns.md",
     "commands/autonomy.md",
+    "commands/backlog.md",
     "commands/backup.md",
     "commands/claudenv-admin.md",
     "commands/claudenv.md",
     "commands/debug.md",
+    "commands/docs.md",
     "commands/execute.md",
     "commands/feature.md",
     "commands/autopilot.md",
@@ -34,6 +36,7 @@
     "commands/prime.md",
     "commands/rca.md",
     "commands/reflect.md",
+    "commands/shipit.md",
     "commands/triggers.md",
     "commands/validate.md",
     "learning/observations.md",
