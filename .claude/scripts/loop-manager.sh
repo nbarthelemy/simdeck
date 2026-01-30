@@ -57,6 +57,8 @@ init_loop() {
     local max_time="${5:-2h}"
     local mode="${6:-standard}"
     local verify_cmd="${7:-}"
+    local context_mode="${8:-fresh}"  # fresh (default) or same
+    local commit_mode="${9:-none}"    # none, task, or phase
 
     init_dirs
 
@@ -74,6 +76,8 @@ init_loop() {
   "status": "running",
   "prompt": $(echo "$prompt" | jq -Rs .),
   "mode": "$mode",
+  "contextMode": "$context_mode",
+  "commitMode": "$commit_mode",
   "started_at": "$now",
   "iterations": {
     "current": 0,
@@ -91,6 +95,8 @@ init_loop() {
     "checkpoint_interval": 5
   },
   "checkpoints": [],
+  "subagentResults": [],
+  "commits": [],
   "metrics": {
     "estimated_tokens": 0,
     "estimated_cost": "\$0.00",
@@ -258,6 +264,107 @@ log_error() {
     mv "$STATE_FILE.tmp" "$STATE_FILE"
 }
 
+# Record subagent result (for fresh context mode)
+record_subagent_result() {
+    local iteration="$1"
+    local task_id="$2"
+    local status="$3"
+    local summary="$4"
+    local files_modified="$5"
+    local duration="$6"
+
+    if [ ! -f "$STATE_FILE" ]; then
+        return 1
+    fi
+
+    local now=$(timestamp)
+
+    # Parse files_modified as JSON array or create one
+    local files_json="[]"
+    if [ -n "$files_modified" ]; then
+        files_json=$(echo "$files_modified" | tr ',' '\n' | jq -R . | jq -s .)
+    fi
+
+    jq ".subagentResults += [{
+        \"iteration\": $iteration,
+        \"taskId\": $(echo "$task_id" | jq -Rs .),
+        \"status\": \"$status\",
+        \"summary\": $(echo "$summary" | jq -Rs .),
+        \"filesModified\": $files_json,
+        \"duration\": \"$duration\",
+        \"timestamp\": \"$now\"
+    }]" "$STATE_FILE" > "$STATE_FILE.tmp"
+    mv "$STATE_FILE.tmp" "$STATE_FILE"
+}
+
+# Get context mode
+get_context_mode() {
+    if [ -f "$STATE_FILE" ]; then
+        jq -r '.contextMode // "fresh"' "$STATE_FILE"
+    else
+        echo "fresh"
+    fi
+}
+
+# Estimate context tokens used
+# Heuristic based on iterations, files modified, and errors
+estimate_context_tokens() {
+    if [ ! -f "$STATE_FILE" ]; then
+        echo "0"
+        return
+    fi
+
+    # Base context (rules, skills, project context)
+    local base_tokens=5000
+
+    # Per-iteration accumulation (rough estimate)
+    local iterations=$(jq -r '.iterations.current // 0' "$STATE_FILE")
+    local tokens_per_iteration=2500
+
+    # Files modified accumulation
+    local subagent_count=$(jq -r '.subagentResults | length // 0' "$STATE_FILE")
+    local tokens_per_subagent=1000
+
+    # Errors add context
+    local error_count=$(jq -r '.errors | length // 0' "$STATE_FILE")
+    local tokens_per_error=500
+
+    local total=$((base_tokens + (iterations * tokens_per_iteration) + (subagent_count * tokens_per_subagent) + (error_count * tokens_per_error)))
+
+    echo "$total"
+}
+
+# Get context budget status
+get_context_budget() {
+    if [ ! -f "$STATE_FILE" ]; then
+        echo '{"estimatedTokens": 0, "maxTokens": 200000, "percentage": 0, "status": "none"}'
+        return
+    fi
+
+    local estimated=$(estimate_context_tokens)
+    local max_tokens=200000
+    local threshold=80  # 80% is quality degradation threshold
+
+    local percentage=$((estimated * 100 / max_tokens))
+
+    local status="healthy"
+    if [ "$percentage" -ge 90 ]; then
+        status="critical"
+    elif [ "$percentage" -ge "$threshold" ]; then
+        status="warning"
+    fi
+
+    cat << JSONEOF
+{
+  "estimatedTokens": $estimated,
+  "maxTokens": $max_tokens,
+  "percentage": $percentage,
+  "threshold": $threshold,
+  "status": "$status"
+}
+JSONEOF
+}
+
 # Check limits
 check_limits() {
     if [ ! -f "$STATE_FILE" ]; then
@@ -339,6 +446,7 @@ PLAN_STATE_FILE="$LOOP_DIR/plan-state.json"
 init_plan() {
     local plan_file="$1"
     local validate_after_phase="${2:-false}"
+    local validate_after_task="${3:-false}"
 
     init_dirs
 
@@ -362,13 +470,16 @@ init_plan() {
   "status": "running",
   "startedAt": "$now",
   "validateAfterPhase": $validate_after_phase,
+  "validateAfterTask": $validate_after_task,
   "currentPhase": 1,
+  "currentPhaseStartedAt": "$now",
   "currentTask": null,
   "totalPhases": $phase_count,
   "totalTasks": $task_count,
   "tasksCompleted": [],
   "phasesCompleted": [],
-  "validationResults": {}
+  "validationResults": {},
+  "validationFailures": 0
 }
 EOF
 
@@ -415,6 +526,28 @@ complete_plan_task() {
     local plan_file=$(jq -r '.planFile' "$PLAN_STATE_FILE")
     local now=$(timestamp)
 
+    # Check if task validation is enabled
+    local validate_tasks=$(jq -r '.validateAfterTask // false' "$PLAN_STATE_FILE")
+    if [ "$validate_tasks" = "true" ]; then
+        echo "TASK_VALIDATION_STARTED"
+
+        # Run task-level validation with auto-fix
+        local validation_script="$REPO_ROOT/.claude/scripts/incremental-validate.sh"
+        if [ -f "$validation_script" ]; then
+            local validation_result
+            if validation_result=$(bash "$validation_script" task --fix 2>&1); then
+                echo "TASK_VALIDATION_PASSED"
+            else
+                echo "TASK_VALIDATION_FAILED"
+                echo "$validation_result"
+                # Increment failure counter
+                jq '.validationFailures += 1' "$PLAN_STATE_FILE" > "$PLAN_STATE_FILE.tmp"
+                mv "$PLAN_STATE_FILE.tmp" "$PLAN_STATE_FILE"
+                return 1
+            fi
+        fi
+    fi
+
     # Add to completed list
     jq ".tasksCompleted += [\"$task_id\"] | .currentTask = \"$task_id\" | .lastUpdated = \"$now\"" "$PLAN_STATE_FILE" > "$PLAN_STATE_FILE.tmp"
     mv "$PLAN_STATE_FILE.tmp" "$PLAN_STATE_FILE"
@@ -441,7 +574,34 @@ complete_plan_phase() {
     local now=$(timestamp)
     local current=$(jq -r '.currentPhase' "$PLAN_STATE_FILE")
 
-    jq ".phasesCompleted += [\"$phase_name\"] | .currentPhase = $((current + 1)) | .lastUpdated = \"$now\"" "$PLAN_STATE_FILE" > "$PLAN_STATE_FILE.tmp"
+    # Check if phase validation is enabled
+    local validate_phases=$(jq -r '.validateAfterPhase // false' "$PLAN_STATE_FILE")
+    if [ "$validate_phases" = "true" ]; then
+        echo "PHASE_VALIDATION_STARTED"
+
+        # Run phase-level validation (types + tests)
+        local validation_script="$REPO_ROOT/.claude/scripts/incremental-validate.sh"
+        if [ -f "$validation_script" ]; then
+            local validation_result
+            if validation_result=$(bash "$validation_script" phase 2>&1); then
+                echo "PHASE_VALIDATION_PASSED"
+                # Record success
+                record_phase_validation "$phase_name" "true" "$validation_result"
+            else
+                echo "PHASE_VALIDATION_FAILED"
+                echo "$validation_result"
+                # Record failure
+                record_phase_validation "$phase_name" "false" "$validation_result"
+                # Increment failure counter
+                jq '.validationFailures += 1' "$PLAN_STATE_FILE" > "$PLAN_STATE_FILE.tmp"
+                mv "$PLAN_STATE_FILE.tmp" "$PLAN_STATE_FILE"
+                return 1
+            fi
+        fi
+    fi
+
+    # Update phase start time for next phase
+    jq ".phasesCompleted += [\"$phase_name\"] | .currentPhase = $((current + 1)) | .currentPhaseStartedAt = \"$now\" | .lastUpdated = \"$now\"" "$PLAN_STATE_FILE" > "$PLAN_STATE_FILE.tmp"
     mv "$PLAN_STATE_FILE.tmp" "$PLAN_STATE_FILE"
 
     echo "PHASE_COMPLETE: $phase_name"
@@ -519,6 +679,74 @@ get_plan_state() {
     fi
 }
 
+# Parse structured task format
+# Input: Task block from plan file (multiline string)
+# Output: JSON with extracted fields
+parse_structured_task() {
+    local task_block="$1"
+
+    # Extract task ID and description from first line
+    # Format: - [ ] **Task 1.1**: Brief description
+    local first_line=$(echo "$task_block" | head -1)
+    local task_id=$(echo "$first_line" | grep -oE "Task [0-9]+\.[0-9]+" | head -1)
+    local description=$(echo "$first_line" | sed 's/.*\*\*Task [0-9.]*\*\*: *//' | sed 's/ *$//')
+
+    # Extract fields (handle both single and multi-file formats)
+    local files=$(echo "$task_block" | grep -E "^\s*- files?:" | sed 's/.*files\?: *//' | sed 's/`//g' | tr -d '\n')
+    local action=$(echo "$task_block" | grep -E "^\s*- action:" | sed 's/.*action: *//')
+    local verify=$(echo "$task_block" | grep -E "^\s*- verify:" | sed 's/.*verify: *//' | sed 's/`//g')
+    local done_criteria=$(echo "$task_block" | grep -E "^\s*- done:" | sed 's/.*done: *//')
+    local references=$(echo "$task_block" | grep -E "^\s*- references?:" | sed 's/.*references\?: *//' | sed 's/`//g')
+    local depends=$(echo "$task_block" | grep -E "^\s*- depends?:" | sed 's/.*depends\?: *//')
+
+    # Output as JSON
+    cat << JSONEOF
+{
+  "taskId": "$task_id",
+  "description": $(echo "$description" | jq -Rs .),
+  "files": $(echo "$files" | jq -Rs .),
+  "action": $(echo "$action" | jq -Rs .),
+  "verify": $(echo "$verify" | jq -Rs .),
+  "done": $(echo "$done_criteria" | jq -Rs .),
+  "references": $(echo "$references" | jq -Rs .),
+  "depends": $(echo "$depends" | jq -Rs .)
+}
+JSONEOF
+}
+
+# Get next task with structured fields
+get_next_structured_task() {
+    if [ ! -f "$PLAN_STATE_FILE" ]; then
+        echo "{}"
+        return 1
+    fi
+
+    local plan_file=$(jq -r '.planFile' "$PLAN_STATE_FILE")
+
+    if [ ! -f "$plan_file" ]; then
+        echo "{}"
+        return 1
+    fi
+
+    # Find first unchecked task and extract its block
+    local task_line_num=$(grep -n "\- \[ \] \*\*Task" "$plan_file" | head -1 | cut -d: -f1)
+
+    if [ -z "$task_line_num" ]; then
+        echo "{}"
+        return 0
+    fi
+
+    # Extract task block (from task line until next task or section)
+    local task_block=$(sed -n "${task_line_num},/^- \[.\] \*\*Task\|^###/p" "$plan_file" | head -n -1)
+
+    # If task_block is empty (last task), get to end of Tasks section
+    if [ -z "$task_block" ] || [ "$(echo "$task_block" | wc -l)" -eq 1 ]; then
+        task_block=$(sed -n "${task_line_num},/^##/p" "$plan_file" | head -n -1)
+    fi
+
+    parse_structured_task "$task_block"
+}
+
 # Main dispatcher
 case "${1:-}" in
     init)
@@ -550,6 +778,16 @@ case "${1:-}" in
     error)
         shift
         log_error "$@"
+        ;;
+    record_subagent)
+        shift
+        record_subagent_result "$@"
+        ;;
+    context_mode)
+        get_context_mode
+        ;;
+    context_budget)
+        get_context_budget
         ;;
     check)
         check_limits
@@ -596,6 +834,13 @@ case "${1:-}" in
     plan_state)
         get_plan_state
         ;;
+    parse_task)
+        shift
+        parse_structured_task "$@"
+        ;;
+    next_structured_task)
+        get_next_structured_task
+        ;;
     *)
         echo "Usage: loop-manager.sh <action> [args]"
         echo ""
@@ -606,6 +851,7 @@ case "${1:-}" in
         echo "Plan Mode Actions:"
         echo "  init_plan, next_task, complete_task, complete_phase"
         echo "  record_validation, plan_complete, finish_plan, plan_state"
+        echo "  parse_task, next_structured_task"
         exit 1
         ;;
 esac

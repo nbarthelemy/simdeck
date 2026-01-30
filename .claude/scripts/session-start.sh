@@ -2,12 +2,100 @@
 # Session Start Hook
 # Runs when a new Claude session begins
 
-# Exit gracefully if not in project root
-[ ! -d ".claude" ] && exit 0
+# Find project root by looking for .claude directory
+find_project_root() {
+    local dir="$PWD"
+    while [ "$dir" != "/" ]; do
+        if [ -d "$dir/.claude" ]; then
+            echo "$dir"
+            return 0
+        fi
+        dir=$(dirname "$dir")
+    done
+    return 1
+}
+
+# Change to project root or exit gracefully
+PROJECT_ROOT=$(find_project_root)
+if [ -z "$PROJECT_ROOT" ]; then
+    exit 0
+fi
+cd "$PROJECT_ROOT" || exit 0
 
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo "🚀 Session Started"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+
+# Check for missed handoff from previous session
+if [ -f ".claude/state/.needs-handoff" ]; then
+    echo ""
+    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    echo "⚠️  PREVIOUS SESSION ENDED WITHOUT HANDOFF"
+    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    echo ""
+    echo "Context from the previous session may be lost."
+    echo "Review the session state and update if needed:"
+    echo ""
+    echo "   /ce:focus                # View current state"
+    echo "   /ce:focus set \"task\"     # Set current focus"
+    echo "   /ce:focus decision \"...\" # Record a decision"
+    echo ""
+    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+
+    # Clear the marker so we only warn once
+    rm -f ".claude/state/.needs-handoff"
+fi
+
+# Load session state if available
+if [ -f ".claude/state/session-state.json" ] && command -v jq &> /dev/null; then
+    STATE_FILE=".claude/state/session-state.json"
+
+    # Get focus info
+    ACTIVE_PLAN=$(jq -r '.focus.activePlan // empty' "$STATE_FILE")
+    CURRENT_TASK=$(jq -r '.focus.currentTask // empty' "$STATE_FILE")
+    FOCUS_LOCKED=$(jq -r '.focus.locked' "$STATE_FILE")
+
+    # Get handoff info
+    HANDOFF_NOTES=$(jq -r '.handoff.notes // empty' "$STATE_FILE")
+    NEXT_STEPS=$(jq -r '.handoff.nextSteps | length' "$STATE_FILE")
+
+    # Get blockers
+    BLOCKER_COUNT=$(jq -r '.blockers | length' "$STATE_FILE")
+
+    # Display focus if active
+    if [ -n "$CURRENT_TASK" ]; then
+        echo ""
+        echo "🎯 Current Focus:"
+        echo "   Task: $CURRENT_TASK"
+        [ -n "$ACTIVE_PLAN" ] && echo "   Plan: $ACTIVE_PLAN"
+        [ "$FOCUS_LOCKED" = "true" ] && echo "   Status: 🔒 Locked"
+    fi
+
+    # Display handoff notes from last session
+    if [ -n "$HANDOFF_NOTES" ]; then
+        echo ""
+        echo "📋 From last session:"
+        echo "   $HANDOFF_NOTES"
+    fi
+
+    # Display next steps if any
+    if [ "$NEXT_STEPS" -gt 0 ]; then
+        echo ""
+        echo "📝 Next steps ($NEXT_STEPS):"
+        jq -r '.handoff.nextSteps[:3][] | "   • " + .' "$STATE_FILE"
+        [ "$NEXT_STEPS" -gt 3 ] && echo "   ... and $((NEXT_STEPS - 3)) more"
+    fi
+
+    # Display blockers if any
+    if [ "$BLOCKER_COUNT" -gt 0 ]; then
+        echo ""
+        echo "🚧 Blockers ($BLOCKER_COUNT):"
+        jq -r '.blockers[:3][] | "   • " + .issue + " (since " + .since + ")"' "$STATE_FILE"
+    fi
+
+    # Increment session count
+    bash .claude/scripts/state-manager.sh init > /dev/null 2>&1 || true
+fi
 
 # Check for claudenv updates (non-blocking, 2s timeout)
 if [ -f ".claude/version.json" ]; then
@@ -92,7 +180,7 @@ if [ "$REFS" -gt 0 ]; then
 fi
 
 # Check for pending learnings
-PENDING_SKILLS=$(grep -c "^### " .claude/learning/pending-skills.md 2>/dev/null | tr -d ' \n' || echo "0")
+PENDING_SKILLS=$(grep -c "^### " .claude/learning/working/pending-skills.md 2>/dev/null | tr -d ' \n' || echo "0")
 
 if [ "$PENDING_SKILLS" -gt 0 ]; then
     echo "💡 $PENDING_SKILLS pending proposals (/learn:review)"
@@ -102,6 +190,29 @@ fi
 if [ -f ".claude/.autonomy-paused" ]; then
     echo ""
     echo "⏸️  Autonomy is PAUSED - run /autonomy:resume to restore"
+fi
+
+# Display thinking level if not default
+if [ -f ".claude/state/session-state.json" ] && command -v jq &> /dev/null; then
+    THINKING_LEVEL=$(jq -r '.thinking.level // "medium"' .claude/state/session-state.json 2>/dev/null)
+    if [ "$THINKING_LEVEL" != "medium" ]; then
+        echo "🧠 Thinking: $THINKING_LEVEL"
+    fi
+fi
+
+# Check TODO.md status via task-bridge
+if [ -x ".claude/scripts/task-bridge.sh" ]; then
+  TODO_JSON=$(bash .claude/scripts/task-bridge.sh summary 2>/dev/null)
+  HAS_TODO=$(echo "$TODO_JSON" | jq -r '.hasTodo' 2>/dev/null)
+  if [ "$HAS_TODO" = "true" ]; then
+    TODO_PENDING=$(echo "$TODO_JSON" | jq -r '.pending' 2>/dev/null)
+    TODO_PROGRESS=$(echo "$TODO_JSON" | jq -r '.progress' 2>/dev/null)
+    TODO_TOTAL=$(echo "$TODO_JSON" | jq -r '.total' 2>/dev/null)
+    if [ "$TODO_PENDING" -gt 0 ] 2>/dev/null; then
+      echo ""
+      echo "📋 TODO: $TODO_PENDING pending of $TODO_TOTAL tasks ($TODO_PROGRESS% done)"
+    fi
+  fi
 fi
 
 # Suggest /prime if not recently run

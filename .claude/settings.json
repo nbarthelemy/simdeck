@@ -122,6 +122,17 @@
     ]
   },
   "hooks": {
+    "Setup": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash -c 'd=$PWD; while [ \"$d\" != \"/\" ]; do [ -f \"$d/.claude/scripts/bootstrap.sh\" ] && cd \"$d\" && bash .claude/scripts/bootstrap.sh && exit 0; d=$(dirname \"$d\"); done'"
+          }
+        ]
+      }
+    ],
     "SessionStart": [
       {
         "matcher": "",
@@ -129,7 +140,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash /Users/nmb/Projects/nbarthelemy/simdeck/.claude/scripts/session-start.sh"
+            "command": "bash -c 'd=$PWD; while [ \"$d\" != \"/\" ]; do [ -f \"$d/.claude/scripts/session-start.sh\" ] && cd \"$d\" && bash .claude/scripts/session-start.sh && exit 0; d=$(dirname \"$d\"); done'"
           }
         ]
       }
@@ -140,18 +151,47 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash /Users/nmb/Projects/nbarthelemy/simdeck/.claude/scripts/session-end.sh"
+            "command": "bash -c 'd=$PWD; while [ \"$d\" != \"/\" ]; do [ -f \"$d/.claude/scripts/session-end.sh\" ] && cd \"$d\" && bash .claude/scripts/session-end.sh && exit 0; d=$(dirname \"$d\"); done'"
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Write|Edit|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash -c 'd=$PWD; while [ \"$d\" != \"/\" ]; do [ -f \"$d/.claude/scripts/unified-gate.sh\" ] && cd \"$d\" && bash .claude/scripts/unified-gate.sh && exit 0; d=$(dirname \"$d\"); done'"
+          }
+        ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash -c 'd=$PWD; while [ \"$d\" != \"/\" ]; do if [ -f \"$d/.claude/scripts/block-no-verify.sh\" ]; then cd \"$d\" && bash .claude/scripts/block-no-verify.sh; exit $?; fi; d=$(dirname \"$d\"); done'"
           }
         ]
       }
     ],
     "PostToolUse": [
       {
+        "matcher": "Read",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash -c 'd=$PWD; while [ \"$d\" != \"/\" ]; do [ -f \"$d/.claude/scripts/track-read.sh\" ] && cd \"$d\" && bash .claude/scripts/track-read.sh && exit 0; d=$(dirname \"$d\"); done'"
+          }
+        ]
+      },
+      {
         "matcher": "Write|Edit|MultiEdit",
         "hooks": [
           {
             "type": "command",
-            "command": "bash /Users/nmb/Projects/nbarthelemy/simdeck/.claude/scripts/learning-observer.sh"
+            "command": "bash -c 'd=$PWD; while [ \"$d\" != \"/\" ]; do [ -f \"$d/.claude/scripts/post-write.sh\" ] && cd \"$d\" && bash .claude/scripts/post-write.sh && exit 0; d=$(dirname \"$d\"); done'"
           }
         ]
       }

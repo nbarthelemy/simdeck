@@ -1,0 +1,46 @@
+{
+  "version": "1.0.0",
+  "description": "Agent tier system for progressive disclosure. Tier 1 agents are always available, Tier 2 discovered on-demand via orchestrator.",
+
+  "tier1": {
+    "description": "Core agents - always available in base context",
+    "agents": [
+      "frontend-developer",
+      "backend-architect",
+      "code-reviewer",
+      "test-engineer"
+    ]
+  },
+
+  "tier2": {
+    "description": "Specialist agents - discovered on-demand via orchestrator or explicit invocation",
+    "agents": [
+      "api-designer",
+      "devops-engineer",
+      "security-auditor",
+      "performance-analyst",
+      "accessibility-checker",
+      "documentation-writer",
+      "release-manager",
+      "migration-specialist",
+      "architecture-analyst",
+      "concerns-analyst",
+      "conventions-analyst",
+      "integration-analyst",
+      "structure-analyst",
+      "testing-analyst"
+    ]
+  },
+
+  "discovery": {
+    "mechanism": "orchestrator",
+    "triggerFile": "agents/triggers.json",
+    "fallback": "Load agent file directly when explicitly requested"
+  },
+
+  "notes": {
+    "tier1_selection": "Most commonly used across all project types",
+    "tier2_loading": "Loaded when: orchestrator triggers, explicit /agent command, or keyword match",
+    "token_savings": "Estimated 20-30K tokens by not loading all 18 agent descriptions upfront"
+  }
+}

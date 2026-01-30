@@ -11,7 +11,7 @@
 
 ## From Tech Detection
 
-> Agents proposed during `/claudenv` based on detected technologies.
+> Agents proposed during `/ce:init` based on detected technologies.
 > These are created automatically - no action needed.
 
 <!--
@@ -67,7 +67,7 @@ Entry format:
 
 ## Notes
 
-- Agents from tech detection are created immediately during `/claudenv`
+- Agents from tech detection are created immediately during `/ce:init`
 - Agents from usage patterns require 2 occurrences before proposal
 - Use `/learn:implement agent [name]` to create a proposed agent
 - Use `/agents` (built-in) to view all available agents

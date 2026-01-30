@@ -47,8 +47,8 @@ propose_skill() {
         return 0
     fi
 
-    # Check if skill already exists
-    if [ -d ".claude/skills/$skill_name" ]; then
+    # Check if skill already exists (in either namespace)
+    if [ -d ".claude/skills/claudenv/$skill_name" ] || [ -d ".claude/skills/workspace/$skill_name" ]; then
         echo "$proposal_id" >> "$PROPOSED_FILE"
         return 0
     fi

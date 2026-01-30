@@ -121,25 +121,29 @@ check "backups/ exists" \
 echo ""
 echo "## Skills"
 
-SKILL_COUNT=$(find -L .claude/skills -name "SKILL.md" 2>/dev/null | wc -l | tr -d ' ')
+SKILL_COUNT=$(find -L .claude/skills/claudenv .claude/skills/workspace -name "SKILL.md" 2>/dev/null | wc -l | tr -d ' ')
 echo "   Found: $SKILL_COUNT skills"
 
-for skill_dir in .claude/skills/*/; do
-    if [ -d "$skill_dir" ]; then
-        skill_name=$(basename "$skill_dir")
-        if [ -f "${skill_dir}SKILL.md" ]; then
-            # Check frontmatter
-            if head -1 "${skill_dir}SKILL.md" | grep -q "^---"; then
-                echo "   ✅ $skill_name"
-                PASSED=$((PASSED + 1))
-            else
-                echo "   ⚠️  $skill_name - missing frontmatter"
-                WARNINGS=$((WARNINGS + 1))
+for namespace in claudenv workspace; do
+    if [ -d ".claude/skills/$namespace" ]; then
+        for skill_dir in .claude/skills/$namespace/*/; do
+            if [ -d "$skill_dir" ]; then
+                skill_name=$(basename "$skill_dir")
+                if [ -f "${skill_dir}SKILL.md" ]; then
+                    # Check frontmatter
+                    if head -1 "${skill_dir}SKILL.md" | grep -q "^---"; then
+                        echo "   ✅ $namespace:$skill_name"
+                        PASSED=$((PASSED + 1))
+                    else
+                        echo "   ⚠️  $namespace:$skill_name - missing frontmatter"
+                        WARNINGS=$((WARNINGS + 1))
+                    fi
+                else
+                    echo "   ❌ $namespace:$skill_name - missing SKILL.md"
+                    ERRORS=$((ERRORS + 1))
+                fi
             fi
-        else
-            echo "   ❌ $skill_name - missing SKILL.md"
-            ERRORS=$((ERRORS + 1))
-        fi
+        done
     fi
 done
 
@@ -181,20 +185,20 @@ echo ""
 echo "## Learning Files"
 
 warn "observations.md exists" \
-    "[ -f '.claude/learning/observations.md' ]" \
-    "echo '# Development Pattern Observations\n\n> Maintained by learning-agent skill.\n\n---\n\n## Session Log\n' > .claude/learning/observations.md"
+    "[ -f '.claude/learning/working/observations.md' ]" \
+    "echo '# Development Pattern Observations\n\n> Maintained by learning-agent skill.\n\n---\n\n## Session Log\n' > .claude/learning/working/observations.md"
 
 warn "pending-skills.md exists" \
-    "[ -f '.claude/learning/pending-skills.md' ]" \
-    "touch .claude/learning/pending-skills.md"
+    "[ -f '.claude/learning/working/pending-skills.md' ]" \
+    "touch .claude/learning/working/pending-skills.md"
 
 warn "pending-commands.md exists" \
-    "[ -f '.claude/learning/pending-commands.md' ]" \
-    "touch .claude/learning/pending-commands.md"
+    "[ -f '.claude/learning/working/pending-commands.md' ]" \
+    "touch .claude/learning/working/pending-commands.md"
 
 warn "pending-hooks.md exists" \
-    "[ -f '.claude/learning/pending-hooks.md' ]" \
-    "touch .claude/learning/pending-hooks.md"
+    "[ -f '.claude/learning/working/pending-hooks.md' ]" \
+    "touch .claude/learning/working/pending-hooks.md"
 
 echo ""
 echo "## Project Context"

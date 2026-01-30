@@ -2,8 +2,8 @@
 # Skills Triggers Script - JSON output for Claude to format
 
 collect_skills() {
-    SKILLS_DIR=".claude/skills"
-    TRIGGERS_FILE=".claude/skills/triggers.json"
+    SKILLS_DIR=".claude/skills/claudenv"
+    TRIGGERS_FILE=".claude/skills/claudenv/triggers.json"
 
     # Check if triggers.json exists
     HAS_TRIGGERS="false"

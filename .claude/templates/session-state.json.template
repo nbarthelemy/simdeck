@@ -1,0 +1,28 @@
+{
+  "_description": "Session state tracking - maintains focus, decisions, and handoff across sessions",
+
+  "focus": {
+    "activePlan": null,
+    "currentTask": null,
+    "startedAt": null,
+    "filesInScope": [],
+    "locked": false
+  },
+
+  "decisions": [],
+
+  "blockers": [],
+
+  "handoff": {
+    "lastSession": null,
+    "completedTasks": [],
+    "nextSteps": [],
+    "notes": null
+  },
+
+  "metadata": {
+    "createdAt": null,
+    "lastUpdated": null,
+    "sessionCount": 0
+  }
+}

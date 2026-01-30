@@ -4,8 +4,33 @@
 
 set -e
 
+# Check for workspace setup (parent .claude with claudenv)
+find_workspace_root() {
+    local check_dir="$PWD"
+    while [ "$check_dir" != "/" ]; do
+        local parent_dir=$(dirname "$check_dir")
+        if [ -f "$parent_dir/.claude/version.json" ]; then
+            echo "$parent_dir/.claude"
+            return 0
+        fi
+        check_dir="$parent_dir"
+    done
+    return 1
+}
+
+WORKSPACE_ROOT=$(find_workspace_root 2>/dev/null || echo "")
+IS_SUBPROJECT=false
+SCRIPTS_DIR=".claude/scripts"
+if [ -n "$WORKSPACE_ROOT" ]; then
+    IS_SUBPROJECT=true
+    SCRIPTS_DIR="$WORKSPACE_ROOT/scripts"
+fi
+
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo "🚀 Claudenv Bootstrap"
+if [ "$IS_SUBPROJECT" = true ]; then
+    echo "   (Subproject - inherits from workspace)"
+fi
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 
 # Ensure we're in a project directory
@@ -23,8 +48,8 @@ mkdir -p .claude/{logs,backups,learning,plans,rca,reference}
 # Initialize learning files if missing
 echo "📚 Initializing learning files..."
 
-if [ ! -f ".claude/learning/observations.md" ]; then
-    cat > .claude/learning/observations.md << 'EOF'
+if [ ! -f ".claude/learning/working/observations.md" ]; then
+    cat > .claude/learning/working/observations.md << 'EOF'
 # Development Pattern Observations
 
 > Maintained by learning-agent skill. Auto-updated after tasks.
@@ -43,15 +68,17 @@ for file in pending-skills pending-commands pending-hooks; do
     fi
 done
 
-# Make scripts executable
-echo "🔧 Making scripts executable..."
-chmod +x .claude/scripts/*.sh 2>/dev/null || true
+# Make scripts executable (only for workspace root)
+if [ "$IS_SUBPROJECT" = false ]; then
+    echo "🔧 Making scripts executable..."
+    chmod +x .claude/scripts/*.sh 2>/dev/null || true
+fi
 
 # Run tech detection
 echo ""
 echo "🔍 Detecting tech stack..."
-if [ -f ".claude/scripts/detect-stack.sh" ]; then
-    bash .claude/scripts/detect-stack.sh > /tmp/claudenv-detection.json 2>/dev/null
+if [ -f "$SCRIPTS_DIR/detect-stack.sh" ]; then
+    bash "$SCRIPTS_DIR/detect-stack.sh" > /tmp/claudenv-detection.json 2>/dev/null
 
     # Show summary
     if command -v jq &> /dev/null; then

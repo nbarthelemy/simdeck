@@ -28,7 +28,7 @@ collect_health() {
     SCRIPT_NOT_EXEC=$(find .claude/scripts -name "*.sh" ! -perm -u+x 2>/dev/null | wc -l | tr -d ' ')
 
     # Learning files
-    LEARNING_FILES=(".claude/learning/observations.md" ".claude/learning/pending-skills.md" ".claude/learning/pending-agents.md" ".claude/learning/pending-commands.md" ".claude/learning/pending-hooks.md")
+    LEARNING_FILES=(".claude/learning/working/observations.md" ".claude/learning/working/pending-skills.md" ".claude/learning/working/pending-agents.md" ".claude/learning/working/pending-commands.md" ".claude/learning/working/pending-hooks.md")
     LEARNING_MISSING=0
     for f in "${LEARNING_FILES[@]}"; do
         [ ! -f "$f" ] && LEARNING_MISSING=$((LEARNING_MISSING + 1))

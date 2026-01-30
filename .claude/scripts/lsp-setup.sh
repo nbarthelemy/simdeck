@@ -10,7 +10,7 @@ set -e
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 CLAUDE_DIR="$(dirname "$SCRIPT_DIR")"
-MAPPINGS_FILE="$CLAUDE_DIR/skills/lsp-agent/lsp-mappings.json"
+MAPPINGS_FILE="$CLAUDE_DIR/skills/claudenv/lsp-setup/assets/lsp-mappings.json"
 CONFIG_FILE="$CLAUDE_DIR/lsp-config.json"
 LOG_FILE="$CLAUDE_DIR/logs/lsp-setup.log"
 

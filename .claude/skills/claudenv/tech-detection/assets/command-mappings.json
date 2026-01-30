@@ -1,0 +1,166 @@
+{
+  "_description": "Maps detected technologies to allowed bash commands. Format: Bash(command:*)",
+
+  "packageManagers": {
+    "npm": ["Bash(npm:*)", "Bash(npx:*)"],
+    "yarn": ["Bash(yarn:*)", "Bash(npx:*)"],
+    "pnpm": ["Bash(pnpm:*)", "Bash(pnpx:*)", "Bash(npx:*)"],
+    "bun": ["Bash(bun:*)", "Bash(bunx:*)"],
+    "cargo": ["Bash(cargo:*)"],
+    "go": ["Bash(go:*)"],
+    "pip": ["Bash(pip:*)", "Bash(pip3:*)"],
+    "poetry": ["Bash(poetry:*)"],
+    "bundler": ["Bash(bundle:*)", "Bash(gem:*)"],
+    "composer": ["Bash(composer:*)"]
+  },
+
+  "languages": {
+    "javascript": ["Bash(node:*)"],
+    "typescript": ["Bash(tsc:*)", "Bash(tsx:*)", "Bash(ts-node:*)"],
+    "python": ["Bash(python:*)", "Bash(python3:*)"],
+    "ruby": ["Bash(ruby:*)", "Bash(irb:*)"],
+    "go": ["Bash(go:*)"],
+    "rust": ["Bash(rustc:*)", "Bash(cargo:*)"],
+    "php": ["Bash(php:*)"],
+    "java": ["Bash(java:*)", "Bash(javac:*)", "Bash(gradle:*)", "Bash(mvn:*)"],
+    "csharp": ["Bash(dotnet:*)"],
+    "swift": ["Bash(swift:*)", "Bash(swiftc:*)"],
+    "kotlin": ["Bash(kotlin:*)", "Bash(kotlinc:*)"]
+  },
+
+  "frameworks": {
+    "nextjs": ["Bash(next:*)"],
+    "nuxt": ["Bash(nuxt:*)"],
+    "react": [],
+    "vue": ["Bash(vue:*)"],
+    "angular": ["Bash(ng:*)"],
+    "svelte": ["Bash(svelte-kit:*)"],
+    "astro": ["Bash(astro:*)"],
+    "remix": ["Bash(remix:*)"],
+    "gatsby": ["Bash(gatsby:*)"],
+    "express": [],
+    "fastify": [],
+    "nestjs": ["Bash(nest:*)"],
+    "hono": [],
+    "django": ["Bash(django-admin:*)", "Bash(python manage.py:*)"],
+    "flask": ["Bash(flask:*)"],
+    "fastapi": ["Bash(uvicorn:*)"],
+    "rails": ["Bash(rails:*)", "Bash(rake:*)"],
+    "sinatra": []
+  },
+
+  "testRunners": {
+    "jest": ["Bash(jest:*)"],
+    "vitest": ["Bash(vitest:*)"],
+    "playwright": ["Bash(playwright:*)"],
+    "cypress": ["Bash(cypress:*)"],
+    "pytest": ["Bash(pytest:*)"],
+    "phpunit": ["Bash(phpunit:*)"],
+    "rspec": ["Bash(rspec:*)"]
+  },
+
+  "databases": {
+    "prisma": ["Bash(prisma:*)"],
+    "drizzle": ["Bash(drizzle-kit:*)"],
+    "sequelize": ["Bash(sequelize:*)"],
+    "typeorm": ["Bash(typeorm:*)"],
+    "mongoose": [],
+    "postgresql": ["Bash(psql:*)", "Bash(pg_dump:*)", "Bash(createdb:*)", "Bash(dropdb:*)"],
+    "mysql": ["Bash(mysql:*)", "Bash(mysqldump:*)"],
+    "sqlite": ["Bash(sqlite3:*)"],
+    "mongodb": ["Bash(mongosh:*)", "Bash(mongo:*)"],
+    "redis": ["Bash(redis-cli:*)"]
+  },
+
+  "cloudPlatforms": {
+    "aws": [
+      "Bash(aws:*)",
+      "Bash(sam:*)",
+      "Bash(cdk:*)",
+      "Bash(amplify:*)",
+      "Bash(eb:*)"
+    ],
+    "gcp": [
+      "Bash(gcloud:*)",
+      "Bash(gsutil:*)",
+      "Bash(bq:*)",
+      "Bash(firebase:*)"
+    ],
+    "azure": [
+      "Bash(az:*)",
+      "Bash(func:*)"
+    ],
+    "heroku": [
+      "Bash(heroku:*)"
+    ],
+    "vercel": [
+      "Bash(vercel:*)",
+      "Bash(vc:*)"
+    ],
+    "netlify": [
+      "Bash(netlify:*)",
+      "Bash(ntl:*)"
+    ],
+    "fly": [
+      "Bash(fly:*)",
+      "Bash(flyctl:*)"
+    ],
+    "railway": [
+      "Bash(railway:*)"
+    ],
+    "digitalocean": [
+      "Bash(doctl:*)"
+    ],
+    "cloudflare": [
+      "Bash(wrangler:*)"
+    ],
+    "supabase": [
+      "Bash(supabase:*)"
+    ],
+    "firebase": [
+      "Bash(firebase:*)"
+    ]
+  },
+
+  "containerization": {
+    "docker": [
+      "Bash(docker:*)",
+      "Bash(docker-compose:*)"
+    ],
+    "kubernetes": [
+      "Bash(kubectl:*)",
+      "Bash(helm:*)",
+      "Bash(k9s:*)"
+    ],
+    "podman": [
+      "Bash(podman:*)"
+    ]
+  },
+
+  "monorepoTools": {
+    "turbo": ["Bash(turbo:*)"],
+    "nx": ["Bash(nx:*)"],
+    "lerna": ["Bash(lerna:*)"]
+  },
+
+  "linters": {
+    "eslint": ["Bash(eslint:*)"],
+    "prettier": ["Bash(prettier:*)"],
+    "biome": ["Bash(biome:*)"],
+    "black": ["Bash(black:*)"],
+    "ruff": ["Bash(ruff:*)"],
+    "rubocop": ["Bash(rubocop:*)"],
+    "gofmt": ["Bash(gofmt:*)", "Bash(goimports:*)"],
+    "rustfmt": ["Bash(rustfmt:*)"]
+  },
+
+  "buildTools": {
+    "webpack": ["Bash(webpack:*)"],
+    "vite": ["Bash(vite:*)"],
+    "esbuild": ["Bash(esbuild:*)"],
+    "rollup": ["Bash(rollup:*)"],
+    "parcel": ["Bash(parcel:*)"],
+    "make": ["Bash(make:*)"],
+    "cmake": ["Bash(cmake:*)"]
+  }
+}

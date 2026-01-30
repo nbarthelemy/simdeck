@@ -1,0 +1,128 @@
+{
+  "version": "1.0.0",
+  "generated": "Auto-generated - DO NOT EDIT MANUALLY",
+  "_note": "LAZY LOADED: This file is NOT in base context. Loaded on-demand by orchestrator skill when matching triggers to agents/skills.",
+  "skills": {
+    "frontend-design": {
+      "keywords": ["UI", "UX", "CSS", "SCSS", "styling", "Tailwind", "layout", "animation", "typography", "colors", "themes", "dark mode", "light mode", "responsive", "mobile-first"],
+      "phrases": ["make it look better", "improve the look", "improve the design", "polish the UI", "fix styling", "redesign components", "beautify", "make it pretty", "update the styles", "modernize the UI", "make it responsive", "add dark mode", "needs visual polish", "looks ugly", "looks bad"]
+    },
+    "autonomous-loop": {
+      "keywords": ["loop", "iterate", "autonomous", "autopilot"],
+      "phrases": ["keep going until done", "work autonomously", "run overnight", "continue until", "don't stop until", "keep iterating", "run in a loop", "iterate until complete", "work until finished", "autonomous mode"]
+    },
+    "lsp-setup": {
+      "keywords": ["LSP", "language server", "intellisense", "code intelligence"],
+      "phrases": ["go-to-definition", "find references", "hover docs", "code navigation", "jump to definition", "find usages", "symbol search", "setup language server", "install LSP"]
+    },
+    "project-interview": {
+      "keywords": ["interview", "specification", "spec", "requirements"],
+      "phrases": ["create a spec", "help plan", "define what to build", "starting a new project", "new project setup", "gather requirements", "planning architecture", "making tech decisions", "what should we build", "help me plan this", "project requirements", "write a spec"]
+    },
+    "skill-creator": {
+      "keywords": [],
+      "phrases": ["create a skill", "creating a skill", "new skill", "scaffold skill", "scaffolding skill", "initialize skill", "build a skill", "make a skill"]
+    },
+    "meta-skill": {
+      "keywords": [],
+      "phrases": ["unknown framework", "unfamiliar technology", "never used before", "don't know this tech", "extend capabilities", "add support for", "learn about this framework"]
+    },
+    "tech-detection": {
+      "keywords": ["stack", "technologies", "frameworks"],
+      "phrases": ["analyze project", "detect stack", "what tech is used", "detecting technologies", "bootstrapping infrastructure", "setting up permissions", "what frameworks", "identify stack"]
+    },
+    "pattern-observer": {
+      "keywords": ["patterns", "learnings", "automations"],
+      "phrases": ["review learnings", "analyze patterns", "create automations", "workflow optimization", "pending suggestions", "what did you learn", "what have we learned", "repeated tasks", "automate this pattern"]
+    },
+    "orchestrator": {
+      "keywords": ["comprehensive", "thorough", "complete"],
+      "phrases": ["full review", "review everything", "across the codebase", "refactor all", "entire project", "all files", "comprehensive analysis", "parallel execution", "spawn agents", "multi-domain task"]
+    },
+    "agent-creator": {
+      "keywords": [],
+      "phrases": ["create an agent", "new specialist agent", "specialist for this tech", "need an expert for"]
+    },
+    "tool-search": {
+      "keywords": ["MCP", "tools", "capabilities"],
+      "phrases": ["what tools", "find tool", "available MCP", "tool for", "capability search", "what can you do", "is there a tool"]
+    },
+    "spec-workflow": {
+      "keywords": ["spec", "specification", "setup", "bootstrap"],
+      "phrases": ["set up project", "bootstrap project", "create specification", "project specification", "initialize project", "new project from scratch", "start fresh project", "create project spec"]
+    },
+    "autopilot-workflow": {
+      "keywords": ["autopilot", "autonomous", "unattended"],
+      "phrases": ["complete all features", "work through todo", "finish everything", "run autonomously", "hands-off mode", "complete without me", "work overnight", "autonomous completion", "finish the todo list", "process all features"]
+    }
+  },
+  "agents": {
+    "frontend-developer": {
+      "keywords": ["UI", "component", "CSS", "SCSS", "styling", "layout", "responsive", "animation", "frontend", "React", "Vue", "Svelte", "Next.js", "Tailwind", "HTML"],
+      "phrases": ["build the frontend", "create a component", "fix the layout", "make it responsive", "style this page", "update the UI", "frontend implementation", "build this screen"],
+      "filePatterns": ["*.tsx", "*.jsx", "*.vue", "*.svelte", "*.css", "*.scss"]
+    },
+    "backend-architect": {
+      "keywords": ["API", "database", "service", "endpoint", "server", "backend", "microservice", "REST", "GraphQL", "middleware"],
+      "phrases": ["build the backend", "create an API", "design the database", "implement the service", "backend architecture", "server-side logic", "data model design"],
+      "filePatterns": ["*.py", "*.go", "*.rs", "*.java", "*.rb", "*.ts"]
+    },
+    "code-reviewer": {
+      "keywords": ["review", "quality", "refactor", "patterns", "best practices", "code smell", "clean code", "DRY", "SOLID"],
+      "phrases": ["review this code", "check for issues", "improve code quality", "refactor this", "code review", "find problems", "any issues here", "is this good code"],
+      "filePatterns": []
+    },
+    "security-auditor": {
+      "keywords": ["security", "vulnerability", "auth", "authentication", "authorization", "encryption", "XSS", "injection", "OWASP", "CVE", "secrets", "credentials"],
+      "phrases": ["security audit", "check for vulnerabilities", "is this secure", "security review", "find security issues", "penetration test", "security scan", "check authentication"],
+      "filePatterns": []
+    },
+    "test-engineer": {
+      "keywords": ["test", "testing", "coverage", "TDD", "Jest", "pytest", "Playwright", "Cypress", "unit test", "integration test", "e2e", "mock", "fixture"],
+      "phrases": ["write tests", "add test coverage", "create unit tests", "test this function", "add integration tests", "e2e tests", "testing strategy", "increase coverage"],
+      "filePatterns": ["*.test.*", "*.spec.*", "*_test.*", "test_*.*"]
+    },
+    "devops-engineer": {
+      "keywords": ["deploy", "CI", "CD", "Docker", "Kubernetes", "K8s", "infrastructure", "pipeline", "GitHub Actions", "Terraform", "AWS", "GCP", "Azure", "container"],
+      "phrases": ["set up CI/CD", "deploy this", "create a pipeline", "containerize", "infrastructure setup", "configure deployment", "set up Docker", "create Dockerfile"],
+      "filePatterns": ["Dockerfile", "docker-compose.*", "*.yaml", ".github/workflows/*"]
+    },
+    "api-designer": {
+      "keywords": ["API", "endpoint", "schema", "OpenAPI", "GraphQL", "REST", "swagger", "routes", "request", "response"],
+      "phrases": ["design the API", "create endpoints", "API schema", "define routes", "REST API design", "GraphQL schema", "API documentation", "endpoint structure"],
+      "filePatterns": ["*.yaml", "*.json", "openapi.*", "swagger.*", "*.graphql"]
+    },
+    "performance-analyst": {
+      "keywords": ["performance", "optimize", "slow", "benchmark", "profiling", "memory", "CPU", "latency", "throughput", "caching", "fast"],
+      "phrases": ["optimize performance", "make it faster", "why is it slow", "performance issues", "speed this up", "reduce latency", "improve throughput", "memory leak"],
+      "filePatterns": []
+    },
+    "accessibility-checker": {
+      "keywords": ["accessibility", "a11y", "WCAG", "ARIA", "screen reader", "keyboard navigation", "contrast", "alt text"],
+      "phrases": ["accessibility audit", "check accessibility", "WCAG compliance", "screen reader support", "keyboard accessible", "add ARIA labels", "accessibility review", "a11y check"],
+      "filePatterns": ["*.tsx", "*.jsx", "*.vue", "*.html", "*.svelte"]
+    },
+    "documentation-writer": {
+      "keywords": ["docs", "documentation", "README", "guide", "tutorial", "API docs", "JSDoc", "comments", "changelog"],
+      "phrases": ["write documentation", "update the README", "document this", "add comments", "create a guide", "API documentation", "write a tutorial", "generate docs"],
+      "filePatterns": ["*.md", "*.mdx", "*.rst", "README*", "CHANGELOG*"]
+    },
+    "release-manager": {
+      "keywords": ["release", "version", "changelog", "deploy", "publish", "tag", "semver", "bump"],
+      "phrases": ["prepare release", "version bump", "update changelog", "create release", "publish package", "tag version", "release notes", "ship it"],
+      "filePatterns": ["package.json", "CHANGELOG*", "version.*"]
+    },
+    "migration-specialist": {
+      "keywords": ["migrate", "upgrade", "refactor", "modernize", "legacy", "transition", "deprecate", "breaking change"],
+      "phrases": ["migrate to", "upgrade from", "modernize this", "refactor legacy", "handle breaking changes", "version upgrade", "migration plan", "deprecation strategy"],
+      "filePatterns": []
+    }
+  },
+  "matchingRules": {
+    "caseSensitive": false,
+    "partialMatch": true,
+    "preferSpecific": true,
+    "skillsRunInMain": true,
+    "agentsRunAsSubagents": true
+  }
+}

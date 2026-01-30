@@ -19,8 +19,11 @@ JSONEOF
     SKILL_DIR=""
     SKILL_TYPE=""
 
-    if [ -d ".claude/skills/$SKILL_NAME" ]; then
-        SKILL_DIR=".claude/skills/$SKILL_NAME"
+    if [ -d ".claude/skills/claudenv/$SKILL_NAME" ]; then
+        SKILL_DIR=".claude/skills/claudenv/$SKILL_NAME"
+        SKILL_TYPE="skill"
+    elif [ -d ".claude/skills/workspace/$SKILL_NAME" ]; then
+        SKILL_DIR=".claude/skills/workspace/$SKILL_NAME"
         SKILL_TYPE="skill"
     elif [ -d ".claude/agents/$SKILL_NAME" ]; then
         SKILL_DIR=".claude/agents/$SKILL_NAME"
@@ -32,7 +35,7 @@ JSONEOF
 {
   "error": true,
   "message": "Skill or agent '$SKILL_NAME' not found",
-  "searchedLocations": [".claude/skills/$SKILL_NAME", ".claude/agents/$SKILL_NAME"]
+  "searchedLocations": [".claude/skills/claudenv/$SKILL_NAME", ".claude/skills/workspace/$SKILL_NAME", ".claude/agents/$SKILL_NAME"]
 }
 JSONEOF
         return

@@ -30,11 +30,11 @@ output_json() {
     HOOK_STOP=$(jq -e '.hooks.Stop' .claude/settings.json >/dev/null 2>&1 && echo "true" || echo "false")
 
     # Learning
-    OBS_COUNT=$(grep -c "^## " .claude/learning/observations.md 2>/dev/null) || OBS_COUNT=0
-    PENDING_SKILLS=$(grep -c "^### " .claude/learning/pending-skills.md 2>/dev/null) || PENDING_SKILLS=0
-    PENDING_AGENTS=$(grep -c "^### " .claude/learning/pending-agents.md 2>/dev/null) || PENDING_AGENTS=0
-    PENDING_CMDS=$(grep -c "^### " .claude/learning/pending-commands.md 2>/dev/null) || PENDING_CMDS=0
-    PENDING_HOOKS=$(grep -c "^### " .claude/learning/pending-hooks.md 2>/dev/null) || PENDING_HOOKS=0
+    OBS_COUNT=$(grep -c "^## " .claude/learning/working/observations.md 2>/dev/null) || OBS_COUNT=0
+    PENDING_SKILLS=$(grep -c "^### " .claude/learning/working/pending-skills.md 2>/dev/null) || PENDING_SKILLS=0
+    PENDING_AGENTS=$(grep -c "^### " .claude/learning/working/pending-agents.md 2>/dev/null) || PENDING_AGENTS=0
+    PENDING_CMDS=$(grep -c "^### " .claude/learning/working/pending-commands.md 2>/dev/null) || PENDING_CMDS=0
+    PENDING_HOOKS=$(grep -c "^### " .claude/learning/working/pending-hooks.md 2>/dev/null) || PENDING_HOOKS=0
 
     # Permissions
     ALLOW_COUNT=$(jq -r '.permissions.allow // [] | length' .claude/settings.json 2>/dev/null)
