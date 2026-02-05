@@ -112,7 +112,7 @@ if [ -f ".claude/version.json" ]; then
            [ "$REMOTE_VERSION" != "$LOCAL_VERSION" ]; then
             echo ""
             echo "📦 Update available: v$LOCAL_VERSION → v$REMOTE_VERSION"
-            echo "   Run /claudenv:update to upgrade"
+            echo "   Run /ce:admin update to upgrade"
         fi
     fi
 fi
@@ -140,7 +140,7 @@ if [ -f ".claude/project-context.json" ]; then
 else
     echo ""
     echo "⚠️  No project context found"
-    echo "   Run /claudenv to initialize"
+    echo "   Run /ce:init to initialize"
 fi
 
 # Check for SPEC.md
@@ -156,7 +156,7 @@ if [ -f ".claude/SPEC.md" ]; then
     [ -n "$MODIFIED" ] && echo "   Last updated: $MODIFIED"
 else
     echo "📋 Specification: Not found"
-    echo "   Run /interview to create"
+    echo "   Run /ce:interview to create"
 fi
 
 # Count infrastructure components
@@ -174,7 +174,7 @@ if [ "$PLANS" -gt 0 ] || [ "$RCAS" -gt 0 ]; then
 fi
 
 # Check for reference docs
-REFS=$(find .claude/reference -name "*.md" 2>/dev/null | wc -l | tr -d ' ')
+REFS=$(find .claude/references -name "*.md" 2>/dev/null | wc -l | tr -d ' ')
 if [ "$REFS" -gt 0 ]; then
     echo "📚 Reference docs: $REFS"
 fi
@@ -184,6 +184,63 @@ PENDING_SKILLS=$(grep -c "^### " .claude/learning/working/pending-skills.md 2>/d
 
 if [ "$PENDING_SKILLS" -gt 0 ]; then
     echo "💡 $PENDING_SKILLS pending proposals (/learn:review)"
+fi
+
+# Memory system status and automatic injection
+MEMORY_MODE="auto"
+if [ -f ".claude/.memory-manual" ]; then
+    MEMORY_MODE="manual"
+fi
+
+if [ -f ".claude/memory/memory.db" ]; then
+    MEMORY_STATUS=$(bash .claude/scripts/memory-status.sh 2>/dev/null)
+    if command -v jq &> /dev/null && [ -n "$MEMORY_STATUS" ]; then
+        MEM_OBS=$(echo "$MEMORY_STATUS" | jq -r '.counts.observations // 0')
+        MEM_PENDING=$(echo "$MEMORY_STATUS" | jq -r '.pending.observations // 0')
+        MEM_HIGH=$(echo "$MEMORY_STATUS" | jq -r '.importance.high // 0')
+        MEM_VEC=$(echo "$MEMORY_STATUS" | jq -r '.vec.available // false')
+        MEM_EMBED_PENDING=$(echo "$MEMORY_STATUS" | jq -r '.pending.embeddings // 0')
+
+        if [ "$MEM_OBS" -gt 0 ] || [ "$MEM_PENDING" -gt 0 ]; then
+            echo "🧠 Memory: $MEM_OBS observations ($MEM_HIGH high importance)"
+            if [ "$MEM_PENDING" -gt 0 ]; then
+                echo "   ⏳ $MEM_PENDING pending - will process this session"
+            fi
+            if [ "$MEMORY_MODE" = "manual" ]; then
+                echo "   📴 Mode: manual (/ce:do for context)"
+            fi
+        fi
+
+        # Generate missing embeddings in background if sqlite-vec available
+        if [ "$MEM_VEC" = "true" ] && [ "$MEM_EMBED_PENDING" -gt 0 ]; then
+            if [ -f ".claude/scripts/memory-embed.js" ]; then
+                echo "   🔄 Generating $MEM_EMBED_PENDING embeddings in background..."
+                (node .claude/scripts/memory-embed.js batch > /dev/null 2>&1 &)
+            fi
+        fi
+
+        # Automatic memory context injection (when in auto mode and has observations)
+        if [ "$MEMORY_MODE" = "auto" ] && [ "$MEM_OBS" -gt 0 ]; then
+            MEMORY_CONTEXT=$(bash .claude/scripts/memory-inject.sh 2>/dev/null)
+            if [ -n "$MEMORY_CONTEXT" ] && command -v jq &> /dev/null; then
+                HAS_MEMORY=$(echo "$MEMORY_CONTEXT" | jq -r '.hasMemory // false')
+                if [ "$HAS_MEMORY" = "true" ]; then
+                    # Extract high importance observations for display
+                    HIGH_OBS=$(echo "$MEMORY_CONTEXT" | jq -r '.context.highImportance // []')
+                    HIGH_COUNT=$(echo "$HIGH_OBS" | jq 'length')
+
+                    if [ "$HIGH_COUNT" -gt 0 ] 2>/dev/null && [ "$HIGH_COUNT" != "null" ]; then
+                        echo ""
+                        echo "📚 Recent Context (high importance):"
+                        echo "$HIGH_OBS" | jq -r '.[:3][] | "   • " + .summary[:80] + (if (.summary | length) > 80 then "..." else "" end)' 2>/dev/null
+                        if [ "$HIGH_COUNT" -gt 3 ]; then
+                            echo "   ... and $((HIGH_COUNT - 3)) more"
+                        fi
+                    fi
+                fi
+            fi
+        fi
+    fi
 fi
 
 # Check for paused autonomy

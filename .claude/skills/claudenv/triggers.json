@@ -201,6 +201,30 @@
       "note": "Triggers /spec command for full project setup"
     },
 
+    "seo-geo-expert": {
+      "keywords": [
+        "SEO", "GEO", "meta tags", "structured data", "Schema.org", "JSON-LD",
+        "Open Graph", "OG tags", "Twitter Card", "sitemap", "robots.txt",
+        "canonical", "hreflang", "E-E-A-T", "EEAT", "Core Web Vitals",
+        "search ranking", "indexing", "crawling", "rich snippets",
+        "search optimization", "generative engine"
+      ],
+      "phrases": [
+        "optimize for search", "improve SEO", "fix SEO issues",
+        "add structured data", "add meta tags", "create sitemap",
+        "optimize for Google", "optimize for AI", "improve search rankings",
+        "add schema markup", "make it discoverable", "search engine friendly",
+        "optimize for ChatGPT", "optimize for Perplexity",
+        "add Open Graph tags", "create robots.txt",
+        "fix heading hierarchy", "content optimization"
+      ],
+      "contexts": [
+        "meta tags", "head section", "structured data", "sitemap",
+        "robots.txt", "canonical URL", "schema markup", "rich results",
+        "search results", "SERP", "content strategy"
+      ]
+    },
+
     "autopilot-workflow": {
       "keywords": [
         "autopilot", "autonomous", "unattended"

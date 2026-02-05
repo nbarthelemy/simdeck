@@ -190,6 +190,7 @@ Hand off to other skills when:
 | New/unfamiliar technology detected 2+ times | `meta-skill` - to create specialist skill |
 | Detected tech needs specialist agent | `agent-creator` - to create specialist subagent |
 | Frontend tech detected (React, Vue, Tailwind, etc.) | `frontend-design` - for UI/styling tasks |
+| HTML/template languages detected | `seo-geo-expert` - for SEO/GEO optimization |
 | Architecture decisions needed | `interview-agent` - to gather requirements |
 | Languages detected | `lsp-agent` - to install language servers |
 

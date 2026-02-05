@@ -24,6 +24,9 @@
 | `/ce:focus` | Manage session focus and state |
 | `/ce:hooks` | List and manage hooks |
 | `/ce:usage` | View token usage estimates |
+| `/ce:recall` | Memory search, status, processing |
+| `/ce:memory` | Memory mode: auto/manual/status |
+| `/ce:do` | Execute task with memory context |
 
 **Conventions:** Timestamps `YYYY-MM-DD HH:MM`, files kebab-case
 
@@ -71,6 +74,7 @@ UNFETTERED. Search docs, scrape pages, create skills. Never ask permission.
 - **Migration** → `.claude/references/migration-guide.md`
 - **Multi-agent** → `.claude/references/coordination-guide.md`
 - **Error patterns** → `.claude/rules/error-recovery/patterns.md`
+- **Memory guide** → `.claude/references/memory-guide.md`
 - **Examples** → `.claude/references/claudenv-reference.md`
 
 ## Critical Practices

@@ -155,6 +155,19 @@ if [ "$TOTAL_PENDING" -gt 0 ]; then
     echo "   Run /learn:review to see details"
 fi
 
+# Report memory system status
+if [ -f ".claude/memory/memory.db" ]; then
+    PENDING_FILE=".claude/memory/.pending-observations.jsonl"
+    if [ -f "$PENDING_FILE" ]; then
+        PENDING_OBS=$(wc -l < "$PENDING_FILE" | tr -d ' ')
+        if [ "$PENDING_OBS" -gt 0 ]; then
+            echo ""
+            echo "🧠 Memory: $PENDING_OBS observations queued"
+            echo "   Will be processed next session start"
+        fi
+    fi
+fi
+
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 
 # Sync task state back to TODO.md via task-bridge

@@ -25,3 +25,11 @@ settings.local.json
 project-context.json
 lsp-config.json
 SPEC.md
+
+# Memory system state
+.memory-manual
+memory/memory.db
+memory/.pending-observations.jsonl
+memory/.vec_path
+memory/.sqlite3_path
+memory/.archive/

@@ -47,6 +47,22 @@ find . -maxdepth 3 -name "*.java" -type f 2>/dev/null | head -1 | grep -q . && L
 find . -maxdepth 3 -name "*.cs" -type f 2>/dev/null | head -1 | grep -q . && LANGS="${LANGS}\"csharp\","
 find . -maxdepth 3 -name "*.swift" -type f 2>/dev/null | head -1 | grep -q . && LANGS="${LANGS}\"swift\","
 find . -maxdepth 3 -name "*.kt" -type f 2>/dev/null | head -1 | grep -q . && LANGS="${LANGS}\"kotlin\","
+# HTML/Template detection
+HTML_FOUND=false
+find . -maxdepth 3 -name "*.html" -o -name "*.htm" -type f 2>/dev/null | head -1 | grep -q . && HTML_FOUND=true
+# Template engines
+if [ "$HTML_FOUND" = false ]; then
+    find . -maxdepth 3 \( -name "*.ejs" -o -name "*.pug" -o -name "*.hbs" -o -name "*.njk" -o -name "*.j2" -o -name "*.liquid" -o -name "*.twig" \) -type f 2>/dev/null | head -1 | grep -q . && HTML_FOUND=true
+fi
+# Static site generators
+[ -f ".eleventy.js" ] || [ -f "eleventy.config.js" ] && HTML_FOUND=true
+([ -f "hugo.toml" ] || ([ -f "config.toml" ] && [ -d "layouts" ])) && [ -d "content" ] && HTML_FOUND=true
+[ -f "_config.yml" ] && [ -d "_posts" ] && HTML_FOUND=true
+[ -f "pelicanconf.py" ] && HTML_FOUND=true
+# CMS themes
+[ -f "style.css" ] && grep -q "Theme Name:" style.css 2>/dev/null && HTML_FOUND=true
+[ -d "sections" ] && [ -d "templates" ] && [ -f "config/settings_schema.json" ] && HTML_FOUND=true
+[ "$HTML_FOUND" = true ] && LANGS="${LANGS}\"html\","
 # Remove trailing comma
 LANGS=$(echo "$LANGS" | sed 's/,$//')
 echo "${LANGS}],"

@@ -7,13 +7,6 @@ allowed-tools: Bash, Write, Edit, Read, Glob, Grep, WebSearch, WebFetch
 
 You are initializing the Claudenv infrastructure for this project.
 
-**IMPORTANT:** Before starting, load migration rules:
-```bash
-Read .claude/rules/migration.md
-```
-
-This file contains critical rules for preserving existing CLAUDE.md content during migration.
-
 ## Bootstrap Process
 
 Execute these steps in order. After each step, validate success before proceeding.
@@ -58,7 +51,7 @@ Parse the JSON output and extract:
 **IMPORTANT**: If confidence is "low":
 
 1. Inform the user: "Detection confidence is LOW. This usually means the project is new or has minimal configuration."
-2. **Automatically run `/interview`** to gather requirements
+2. **Automatically run `/ce:interview`** to gather requirements
 3. After interview completes, continue with remaining steps
 
 If confidence is "medium" or "high", continue without interview.
@@ -261,10 +254,10 @@ Output a summary:
 ✅ Validation: [X] passed, [Y] warnings, [Z] errors
 
 📚 Available Commands:
-   /interview    - Clarify requirements
-   /ce:loop         - Autonomous development
-   /ce:lsp:status   - Check language servers
-   /health:check - Verify integrity
+   /ce:interview - Clarify requirements
+   /ce:loop      - Autonomous development
+   /ce:lsp       - Check language servers
+   /ce:health    - Verify integrity
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ```

@@ -25,7 +25,8 @@
     "java": ["Bash(java:*)", "Bash(javac:*)", "Bash(gradle:*)", "Bash(mvn:*)"],
     "csharp": ["Bash(dotnet:*)"],
     "swift": ["Bash(swift:*)", "Bash(swiftc:*)"],
-    "kotlin": ["Bash(kotlin:*)", "Bash(kotlinc:*)"]
+    "kotlin": ["Bash(kotlin:*)", "Bash(kotlinc:*)"],
+    "html": []
   },
 
   "frameworks": {

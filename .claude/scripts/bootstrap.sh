@@ -43,7 +43,7 @@ fi
 # Create directories if missing
 echo ""
 echo "📁 Ensuring directory structure..."
-mkdir -p .claude/{logs,backups,learning,plans,rca,reference}
+mkdir -p .claude/{logs,backups,learning,learning/working,plans,rca,references}
 
 # Initialize learning files if missing
 echo "📚 Initializing learning files..."
@@ -62,9 +62,9 @@ if [ ! -f ".claude/learning/working/observations.md" ]; then
 EOF
 fi
 
-for file in pending-skills pending-commands pending-hooks; do
-    if [ ! -f ".claude/learning/${file}.md" ]; then
-        touch ".claude/learning/${file}.md"
+for file in pending-skills pending-commands pending-hooks pending-agents; do
+    if [ ! -f ".claude/learning/working/${file}.md" ]; then
+        touch ".claude/learning/working/${file}.md"
     fi
 done
 

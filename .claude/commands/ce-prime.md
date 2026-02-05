@@ -79,6 +79,21 @@ git branch -a 2>/dev/null | head -10
 [ -d .claude/plans ] && ls -la .claude/plans/ 2>/dev/null
 ```
 
+### 7. Load Memory Context
+
+If `.claude/memory/memory.db` exists, run:
+
+```bash
+bash .claude/scripts/memory-inject.sh
+```
+
+This loads relevant memories based on:
+- Current focus/active plan
+- Recently accessed files
+- High-importance observations
+
+Include in report if significant memories are found.
+
 ## Output Report
 
 After gathering context, output a brief report:
@@ -109,6 +124,7 @@ Current State:
 Active Work:
   - {in_progress_item or "None"}
 
+Memory: {observation_count} observations ({high_importance} high importance)
 Reference Docs: {count} files in .claude/references/
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
